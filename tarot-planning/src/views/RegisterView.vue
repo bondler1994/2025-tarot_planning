@@ -1,8 +1,14 @@
 <script setup>
 import { ref } from 'vue'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
+import InputBox from '@/components/InputBox.vue'
+import BtnGoogleLogin from '@/components/BtnGoogleLogin.vue'
+import DialogResponse from '@/components/DialogResponse.vue'
+
+const router = useRouter()
 
 const memberData = ref({
   name: 'A',
@@ -37,6 +43,12 @@ const birthdate = computed({
 })
 
 const isPwd = ref(true)
+const dialog = ref(false)
+const response = ref('')
+
+function openDialog() {
+  dialog.value = true
+}
 
 async function onSubmit() {
   console.log(memberData.value)
@@ -46,114 +58,127 @@ async function onSubmit() {
   try {
     const res = await tarotDiaryAPI.POST('/api/auth/register', payload)
     console.log(res)
-
+    response.value = 'success'
+    openDialog()
   } catch (error) {
     console.log(error)
+    response.value = ''
+    openDialog()
   }
 }
 
-async function loginGoogle() {
-  try {
-    const res = await tarotDiaryAPI.GET('/api/oauth/google/redirect')
-    console.log(res)
-
-  } catch (error) {
-    console.log(error)
+function redirect(response) {
+  if (response === 'success') {
+    router.push({ name: 'home' })
   }
 }
 </script>
 
 <template>
-  <QLayout view="hHh lpr fff">
-    <QPageContainer class="fit row justify-center">
-      <QPage padding class="column justify-center">
-        <div class="column justify-center q-pa-md q-gutter-y-sm" style="width: 350px">
-          <p class="text-h6 text-center text-weight-bold">註冊新會員</p>
+  <div class="column content-center">
+    <div class="column justify-center q-pa-md q-gutter-y-sm" style="width: 350px">
+      <p class="text-h6 text-center text-weight-bold">註冊新會員</p>
 
-          <QForm @submit="onSubmit">
-            <p class="q-mt-md q-mb-sm">使用者名稱</p>
-            <QInput
-              filled
-              v-model="memberData.name"
-              label="您的使用者名稱"
-              hint="中、英文皆可"
-              lazy-rules
-              :rules="[(val) => (val && val.length > 0) || '必填']"
-            ></QInput>
+      <QForm class="q-gutter-y-lg" @submit="onSubmit">
+        <InputBox title="暱稱">
+          <QInput
+            filled
+            label="您的暱稱"
+            hint="中、英文皆可"
+            lazy-rules
+            :rules="[(val) => (val && val.length > 0) || '必填']"
+            v-model="memberData.name"
+          >
+          </QInput>
+        </InputBox>
 
-            <p class="q-mt-md q-mb-sm">Email</p>
-            <QInput
-              v-model="memberData.email"
-              filled
-              type="email"
-              label="您的 Email"
-              hint="alice@example.com"
-              lazy-rules
-              :rules="['email' || '必填']"
-            ></QInput>
+        <InputBox title="Email">
+          <QInput
+            filled
+            label="您的 Email"
+            hint="alice@example.com"
+            lazy-rules
+            :rules="['email' || '必填']"
+            v-model="memberData.email"
+          >
+          </QInput>
+        </InputBox>
 
-            <p class="q-mt-md q-mb-sm">密碼</p>
-            <QInput
-              v-model="memberData.password"
-              filled
-              :type="isPwd ? 'password' : 'text'"
-              label="您的密碼"
-              lazy-rules
-              :rules="[(val) => (val && val.length > 0) || '必填']"
-            >
-              <template v-slot:append>
-                <QIcon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer"
-                  @click="isPwd = !isPwd"
+        <InputBox title="密碼">
+          <QInput
+            filled
+            label="您的密碼"
+            :type="isPwd ? 'password' : 'text'"
+            lazy-rules
+            :rules="[(val) => (val && val.length > 0) || '必填']"
+            v-model="memberData.password"
+          >
+            <template #append>
+              <QIcon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </QInput>
+        </InputBox>
+
+        <InputBox title="性別">
+          <QField borderless v-model="memberData.gender" :rules="[(val) => !!val || '必填']">
+            <template v-slot:control>
+              <div class="q-gutter-x-sm">
+                <QOptionGroup
+                  v-model="memberData.gender"
+                  :options="genderOptions"
+                  color="primary"
+                  inline
                 />
-              </template>
-            </QInput>
+              </div>
+            </template>
+          </QField>
+        </InputBox>
 
-            <p class="q-mt-md q-mb-sm">性別</p>
-            <QField borderless v-model="memberData.gender" :rules="[(val) => !!val || '必填']">
-              <template v-slot:control>
-                <div class="q-gutter-x-sm">
-                  <QOptionGroup
-                    v-model="memberData.gender"
-                    :options="genderOptions"
-                    color="primary"
-                    inline
-                  />
-                </div>
-              </template>
-            </QField>
+        <InputBox title="生日">
+          <QInput filled label="您的生日" lazy-rules :rules="['date']" v-model="birthdate">
+            <template #append>
+              <QIcon name="event" class="cursor-pointer">
+                <QPopupProxy cover transition-show="scale" transition-hide="scale">
+                  <QDate v-model="birthdate">
+                    <div class="row items-center justify-end">
+                      <QBtn v-close-popup label="Close" color="primary" flat />
+                    </div>
+                  </QDate>
+                </QPopupProxy>
+              </QIcon>
+            </template>
+          </QInput>
+        </InputBox>
 
-            <p class="q-mt-md q-mb-sm">生日</p>
-            <QInput filled v-model="birthdate" :rules="['date']">
-              <template v-slot:append>
-                <QIcon name="event" class="cursor-pointer">
-                  <QPopupProxy cover transition-show="scale" transition-hide="scale">
-                    <QDate v-model="birthdate">
-                      <div class="row items-center justify-end">
-                        <QBtn v-close-popup label="Close" color="primary" flat />
-                      </div>
-                    </QDate>
-                  </QPopupProxy>
-                </QIcon>
-              </template>
-            </QInput>
-            <div class="column justify-center">
-              <QBtn padding="md" label="註冊" type="submit" color="primary" />
-            </div>
-          </QForm>
-
-          <p class="q-mt-lg text-center">或是</p>
-
-          <QBtn padding="md" no-caps @click="loginGoogle">
-            <QIcon left size="1.5em" name="fa-brands fa-google"></QIcon>
-            <div>使用 Google 帳戶登入</div>
-          </QBtn>
+        <div class="column justify-center">
+          <QBtn padding="md" label="註冊" type="submit" color="primary" />
         </div>
-        <pre>{{ memberData }}</pre>
-      </QPage>
-    </QPageContainer>
-  </QLayout>
+      </QForm>
+
+      <p class="q-mt-lg text-center">或是</p>
+
+      <BtnGoogleLogin></BtnGoogleLogin>
+
+      <QDialog v-model="dialog" position="top" @hide="redirect">
+        <QCard style="width: 350px">
+          <QCardSection v-if="response === 'success'" class="row items-center no-wrap">
+            <QIcon class="q-pr-xs" name="done" size="sm" color="positive"></QIcon>
+            <div class="text-weight-bold">註冊成功</div>
+          </QCardSection>
+
+          <QCardSection v-else class="row items-center no-wrap">
+            <QIcon class="q-pr-xs" name="error" size="sm" color="negative"></QIcon>
+            <div class="text-weight-bold">連線失敗</div>
+          </QCardSection>
+        </QCard>
+      </QDialog>
+    </div>
+    <pre>{{ memberData }}</pre>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>
