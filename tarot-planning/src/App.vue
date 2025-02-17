@@ -3,13 +3,9 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <QLayout view="hHh lpr fff">
-    <QPageContainer>
-      <QPage padding>
-        <RouterView />
-      </QPage>
-    </QPageContainer>
-  </QLayout>
+  <q-layout view="hHh lpr fff">
+    <RouterView />
+  </q-layout>
 </template>
 
 <style scoped></style>

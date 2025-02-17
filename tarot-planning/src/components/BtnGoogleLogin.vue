@@ -12,10 +12,10 @@ async function loginGoogle() {
 </script>
 
 <template>
-  <QBtn padding="md" no-caps @click="loginGoogle">
-    <QIcon left size="1.5em" name="fa-brands fa-google"></QIcon>
+  <q-btn padding="md" no-caps @click="loginGoogle">
+    <q-icon left size="1.5em" name="fa-brands fa-google"></q-icon>
     <div>使用 Google 帳戶登入</div>
-  </QBtn>
+  </q-btn>
 </template>
 
 <style></style>
