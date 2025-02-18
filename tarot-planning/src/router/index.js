@@ -32,6 +32,11 @@ const router = createRouter({
           name: 'statistics',
           component: () => import('../views/EditView.vue'),
         },
+        {
+          path: 'diary/overview',
+          name: 'overview',
+          component: () => import('../views/DiaryOverviewView.vue'),
+        },
       ],
     },
   ],
