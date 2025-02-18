@@ -36,9 +36,26 @@ const backToToday = reactive({
       week-start="0"
       :markers="markers"
     />
+    <div></div>
     <button @click="backToToday.setter">{{ backToToday.text }}</button>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
+  :root {
+    --dp-border-radius: 0;
+    --dp-cell-border-radius: 50%;
+    --dp-marker-color: red;
+    --dp-row-margin: 0px;
+  }
+.dp__calendar_header {
+  gap: 4px;
+}
+.dp__calendar_header_item {
+  background: red;
+}
+.dp__calendar_row {
+  gap: 4px;
+}
+
 </style>
