@@ -42,12 +42,12 @@ const backToToday = reactive({
 </template>
 
 <style lang="scss">
-  :root {
-    --dp-border-radius: 0;
-    --dp-cell-border-radius: 50%;
-    --dp-marker-color: red;
-    --dp-row-margin: 0px;
-  }
+:root {
+  --dp-border-radius: 0;
+  --dp-cell-border-radius: 50%;
+  --dp-marker-color: red;
+  --dp-row-margin: 0px;
+}
 .dp__calendar_header {
   gap: 4px;
 }
@@ -57,5 +57,4 @@ const backToToday = reactive({
 .dp__calendar_row {
   gap: 4px;
 }
-
 </style>
