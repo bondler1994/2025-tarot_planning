@@ -1,10 +1,16 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { computed } from 'vue'
 
 const now = new Date()
 
 const getYear = computed(() => {
-  return now.getUTCFullYear
+  const options = { year: 'long' }
+  return now.toLocaleDateString('zh-tw', options)
+})
+
+const getDate = computed(() => {
+  const options = { month: 'long', day: '2-digit' }
+  return now.toLocaleDateString('zh-TW', options)
 })
 </script>
 
@@ -34,7 +40,7 @@ const getYear = computed(() => {
 <style lang="scss" scoped>
 .container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   margin: 36px 0 36px 0;
 }
