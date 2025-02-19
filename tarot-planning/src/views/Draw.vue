@@ -136,7 +136,7 @@ const getTransition = (index) => {
           @click="clickCard(card.id)"
         >
           <div class="card" :class="{ flip: card.isFlip }">
-            <div class="front"></div>
+            <div class="front" :class="{ reversed: true}"></div>
             <div class="back"></div>
           </div>
         </div>
@@ -237,6 +237,11 @@ const getTransition = (index) => {
 .front {
   background-image: url(/front.png);
   transform: rotateY(180deg);
+}
+
+.front.reversed {
+  background-image: url(/front.png);
+  transform: rotateY(180deg) rotateZ(180deg);
 }
 
 .back {
