@@ -1,0 +1,93 @@
+<script setup>
+import { ref, computed } from 'vue'
+
+const now = ref(new Date())
+
+const getYear = computed(() => {
+  return now.value.getFullYear()
+})
+
+const getDate = computed(() => {
+  const options = { month: 'long', day: '2-digit' }
+  return now.value.toLocaleDateString('zh-TW', options)
+})
+
+const getWeekday = computed(() => {
+  const options = { weekday: 'short' }
+  return now.value.toLocaleDateString('zh-TW', options)[1]
+})
+</script>
+
+<template>
+  <div class="container">
+    <div class="header date">
+      <div class="date__header">{{ getYear }}</div>
+      <div class="date__body">{{ getDate }}</div>
+      <div class="date__footer">{{ `(${getWeekday})` }}</div>
+    </div>
+    <div class="body draw">
+      <q-btn class="draw__header" unelevated rounded color="primary" label="本日抽牌" />
+
+      <div class="draw__body">S</div>
+    </div>
+    <div class="footer backward">
+      <div class="backward__header">
+        <q-icon name="fa-solid fa-arrow-left" />
+      </div>
+      <div class="backward__body">
+        <span>月曆一覽</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 36px 0 36px 0;
+}
+
+.date {
+  display: flex;
+  justify-content: space-between;
+  width: 322px;
+  height: 40px;
+  background-color: aqua;
+}
+
+.draw {
+  margin: 24px;
+  width: 322px;
+  height: 548px;
+  background-color: gray;
+  position: relative;
+
+  &__header {
+    width: 96px;
+  }
+
+  &__body {
+    position: absolute;
+    bottom: 0;
+    height: 48px;
+    width: 100%;
+    bottom: 0;
+    background-color: white;
+  }
+}
+
+.backward {
+  // font-size: ;
+  display: flex;
+  flex-direction: row;
+  margin-top: 24px;
+  width: 322px;
+  height: 48px;
+  background-color: aqua;
+  &__body {
+    margin-left: 8px;
+  }
+}
+</style>
