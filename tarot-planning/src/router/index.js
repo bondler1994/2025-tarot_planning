@@ -23,6 +23,16 @@ const router = createRouter({
           component: () => import('../views/RegisterView.vue'),
         },
         {
+          path: 'register/confirmation',
+          name: 'register-confirmation',
+          component: () => import('../views/ConfirmationView.vue'),
+        },
+        {
+          path: 'register/success',
+          name: 'register-success',
+          component: () => import('../views/RegisterSuccessView.vue'),
+        },
+        {
           path: 'edit',
           name: 'member-edit',
           component: () => import('../views/EditView.vue'),
