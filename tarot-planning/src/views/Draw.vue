@@ -264,9 +264,8 @@ const getTransition = (index) => {
 .flip {
   // transform: rotateY(900deg); //在電腦版會被簡化成180deg
   rotate: y 540deg; //新語法，注意支援度
-  transition: rotate 0.5s 2s ease-in-out;
+  transition: rotate 0.6s 1s ease-in-out;
   // animation: spin 2s ease forwards;
-
 }
 
 .chosen {
