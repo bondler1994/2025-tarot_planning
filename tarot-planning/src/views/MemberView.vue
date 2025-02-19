@@ -39,12 +39,14 @@ const showingMenu = ref(false)
       <div class="menu-item">
         <q-item clickable>
           <q-item-section>
-            <RouterLink :to="{ name: 'member' }">塔羅日記</RouterLink>
+            <RouterLink :to="{ name: 'member' }" @click="showingMenu = false">塔羅日記</RouterLink>
           </q-item-section>
         </q-item>
         <q-item clickable>
           <q-item-section>
-            <RouterLink :to="{ name: 'statistics' }">日記統計</RouterLink>
+            <RouterLink :to="{ name: 'statistics' }" @click="showingMenu = false"
+              >日記統計</RouterLink
+            >
           </q-item-section>
         </q-item>
       </div>
@@ -52,7 +54,9 @@ const showingMenu = ref(false)
       <div class="menu-item">
         <q-item clickable>
           <q-item-section>
-            <RouterLink :to="{ name: 'member-edit' }">會員資料</RouterLink>
+            <RouterLink :to="{ name: 'member-edit' }" @click="showingMenu = false"
+              >會員資料</RouterLink
+            >
           </q-item-section>
         </q-item>
       </div>
