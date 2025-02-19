@@ -37,6 +37,11 @@ const router = createRouter({
           name: 'overview',
           component: () => import('../views/DiaryOverviewView.vue'),
         },
+        {
+          path: 'today-draw',
+          name: 'today-draw',
+          component: () => import('@/views/TodayDrawView.vue'),
+        },
       ],
     },
   ],

@@ -35,25 +35,25 @@ const showingMenu = ref(false)
   </q-header>
 
   <div :class="showingMenu ? 'menu' : 'menu--no-show'">
-    <q-list  class="menu__body column items-center justify-between q-pa-lg">
+    <q-list class="menu__body column items-center justify-between q-pa-lg">
       <div class="menu-item">
         <q-item clickable>
           <q-item-section>
-            <RouterLink :to="{ name: 'member'}">塔羅日記</RouterLink>
-            </q-item-section>
+            <RouterLink :to="{ name: 'member' }">塔羅日記</RouterLink>
+          </q-item-section>
         </q-item>
         <q-item clickable>
           <q-item-section>
-            <RouterLink :to="{ name: 'statistics'}">日記統計</RouterLink>
-            </q-item-section>
+            <RouterLink :to="{ name: 'statistics' }">日記統計</RouterLink>
+          </q-item-section>
         </q-item>
       </div>
 
       <div class="menu-item">
         <q-item clickable>
           <q-item-section>
-            <RouterLink :to="{ name: 'member-edit'}">會員資料</RouterLink>
-            </q-item-section>
+            <RouterLink :to="{ name: 'member-edit' }">會員資料</RouterLink>
+          </q-item-section>
         </q-item>
       </div>
     </q-list>
@@ -110,14 +110,18 @@ const showingMenu = ref(false)
   z-index: 1;
 
   opacity: 1;
-  transition: opacity 0.5s, z-index 0s;
+  transition:
+    opacity 0.5s,
+    z-index 0s;
 
   &--no-show {
     @extend .menu;
 
     z-index: -1;
     opacity: 0;
-    transition: opacity 0.5s, z-index 0s 0.5s;
+    transition:
+      opacity 0.5s,
+      z-index 0s 0.5s;
   }
 
   &__body {
