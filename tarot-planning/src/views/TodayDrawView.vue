@@ -1,16 +1,20 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 
-const now = new Date()
+const now = ref(new Date())
 
 const getYear = computed(() => {
-  const options = { year: 'long' }
-  return now.toLocaleDateString('zh-tw', options)
+  return now.value.getFullYear()
 })
 
 const getDate = computed(() => {
   const options = { month: 'long', day: '2-digit' }
-  return now.toLocaleDateString('zh-TW', options)
+  return now.value.toLocaleDateString('zh-TW', options)
+})
+
+const getWeekday = computed(() => {
+  const options = { weekday: 'short' }
+  return now.value.toLocaleDateString('zh-TW', options)[1]
 })
 </script>
 
@@ -19,7 +23,7 @@ const getDate = computed(() => {
     <div class="header date">
       <div class="date__header">{{ getYear }}</div>
       <div class="date__body">{{ getDate }}</div>
-      <div class="date__footer">{{ getWeekday }}</div>
+      <div class="date__footer">{{ `(${getWeekday})` }}</div>
     </div>
     <div class="body draw">
       <q-btn class="draw__header" unelevated rounded color="primary" label="本日抽牌" />
@@ -46,6 +50,8 @@ const getDate = computed(() => {
 }
 
 .date {
+  display: flex;
+  justify-content: space-between;
   width: 322px;
   height: 40px;
   background-color: aqua;
