@@ -1,13 +1,19 @@
 <script setup>
-// import {ref, reactive} from "vue"
+import { ref, reactive, computed } from 'vue'
+
+const now = new Date()
+
+const getYear = computed(() => {
+  return now.getUTCFullYear
+})
 </script>
 
 <template>
   <div class="container">
     <div class="header date">
-      <div class="date__header"></div>
-      <div class="date__body"></div>
-      <div class="date__footer"></div>
+      <div class="date__header">{{ getYear }}</div>
+      <div class="date__body">{{ getDate }}</div>
+      <div class="date__footer">{{ getWeekday }}</div>
     </div>
     <div class="body draw">
       <q-btn class="draw__header" unelevated rounded color="primary" label="本日抽牌" />
