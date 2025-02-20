@@ -74,7 +74,7 @@ const showingMenu = ref(false)
 .header {
   height: 64px;
 
-  background-color: #ced4da;
+  background-color: $grey-4;
 
   display: flex;
 
@@ -97,7 +97,7 @@ const showingMenu = ref(false)
   width: 96px;
   height: 48px;
   border-radius: 12px;
-  background-color: #005cad;
+  background-color: $blue-5;
   cursor: pointer;
 }
 
@@ -109,7 +109,7 @@ const showingMenu = ref(false)
   width: 100%;
   height: calc(100vh - 64px);
 
-  background-color: #ced4da;
+  background-color: $grey-4;
 
   z-index: 1;
 
@@ -141,7 +141,7 @@ const showingMenu = ref(false)
 }
 
 .member {
-  background-color: #e9ecef;
+  background-color: $grey-2;
 
   display: flex;
   flex-direction: column;

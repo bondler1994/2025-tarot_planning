@@ -1,30 +1,31 @@
 <script setup>
-import { ref } from 'vue'
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBox from '@/components/InputBox.vue'
-import BtnGoogleLogin from '@/components/BtnGoogleLogin.vue'
+import InputBoxRadio from '@/components/InputBoxRadio.vue'
 
 const router = useRouter()
 
 const memberData = ref({
-  name: 'A',
-  email: 'a@a.com',
-  password: 'aaa',
+  name: '',
+  email: '',
+  password: '',
+  passwordConfirm: '',
   gender: '',
-  birthdate: '2025-02-11',
+  birthdate: '',
+  consentChecked: false,
 })
 
 const genderOptions = ref([
   {
-    label: '女性',
-    value: 'female',
+    label: '男',
+    value: 'male',
   },
   {
-    label: '男性',
-    value: 'male',
+    label: '女',
+    value: 'female',
   },
   {
     label: '其他',
@@ -41,12 +42,65 @@ const birthdate = computed({
   },
 })
 
-const isPwd = ref(true)
+const consent = ref(false)
+
 const dialog = ref(false)
-const response = ref('')
+
+function openConsent() {
+  consent.value = true
+}
 
 function openDialog() {
   dialog.value = true
+}
+
+function requiredRule(val) {
+  if (!(val && val.length > 0)) {
+    return '必填'
+  }
+
+  return true
+}
+
+function emailRule(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  if (!emailRegex.test(email)) {
+    return 'email 格式不正確'
+  }
+  return true
+}
+
+function passwordRule(password) {
+  if (password.length < 8 || password.length > 16) {
+    return '密碼格式錯誤'
+  }
+
+  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+    return '密碼格式錯誤'
+  }
+
+  if (!/[0-9]/.test(password)) {
+    return '密碼格式錯誤'
+  }
+
+  return true
+}
+
+function passwordConfirmRule(val) {
+  if (!(val === memberData.value.password)) {
+    return '密碼不相同'
+  }
+
+  return true
+}
+
+function confirmRule(val) {
+  if (!val) {
+    return '請勾選'
+  }
+
+  return true
 }
 
 async function onSubmit() {
@@ -57,18 +111,13 @@ async function onSubmit() {
   try {
     const res = await tarotDiaryAPI.POST('/api/auth/register', payload)
     console.log(res)
-    response.value = 'success'
-    openDialog()
+
+    router.push({ name: 'registerConfirmation' })
+
+    // openDialog()
   } catch (error) {
     console.log(error)
-    response.value = ''
     openDialog()
-  }
-}
-
-function redirect(response) {
-  if (response === 'success') {
-    router.push({ name: 'home' })
   }
 }
 </script>
@@ -76,120 +125,196 @@ function redirect(response) {
 <template>
   <div class="register column content-center">
     <div class="register__form">
-      <q-form class="q-gutter-y-lg" @submit="onSubmit">
-        <InputBox title="暱稱">
-          <q-input
-            filled
-            label="您的暱稱"
-            hint="中、英文皆可"
-            lazy-rules
-            :rules="[(val) => (val && val.length > 0) || '必填']"
-            v-model="memberData.name"
-          >
-          </q-input>
+      <q-form class="form" @submit="onSubmit">
+        <InputBox
+          title="帳號"
+          hint="帳號即為您的 email"
+          :hasSign="true"
+          v-model="memberData.email"
+          :rules="[emailRule]"
+          refString="email"
+        ></InputBox>
+
+        <InputBox
+          title="密碼"
+          hint="8~16 位，須包含英文大小寫及數字"
+          type="password"
+          :hasSign="true"
+          v-model="memberData.password"
+          :rules="[passwordRule]"
+        ></InputBox>
+
+        <InputBox
+          type="password"
+          :hasSign="true"
+          v-model="memberData.passwordConfirm"
+          :rules="[passwordConfirmRule]"
+        ></InputBox>
+
+        <InputBox title="暱稱" v-model="memberData.name" :rules="[requiredRule]"></InputBox>
+
+        <InputBoxRadio
+          title="性別"
+          v-model="memberData.gender"
+          :rules="[requiredRule]"
+          :options="genderOptions"
+        ></InputBoxRadio>
+
+        <InputBox title="生日" v-model="birthdate" :rules="[requiredRule]">
+          <q-icon name="event" class="cursor-pointer" size="20px">
+            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+              <q-date v-model="birthdate">
+                <div class="row items-center justify-end">
+                  <q-btn v-close-popup label="Close" color="primary" flat />
+                </div>
+              </q-date>
+            </q-popup-proxy>
+          </q-icon>
         </InputBox>
 
-        <InputBox title="Email">
-          <q-input
-            filled
-            label="您的 Email"
-            hint="alice@example.com"
-            lazy-rules
-            :rules="['email' || '必填']"
-            v-model="memberData.email"
+        <div class="consent-validation">
+          <q-field
+            class="consent-field"
+            borderless
+            dense
+            v-model="memberData.consentChecked"
+            :rules="[confirmRule]"
+            no-error-icon
           >
-          </q-input>
-        </InputBox>
-
-        <InputBox title="密碼">
-          <q-input
-            filled
-            label="您的密碼"
-            :type="isPwd ? 'password' : 'text'"
-            lazy-rules
-            :rules="[(val) => (val && val.length > 0) || '必填']"
-            v-model="memberData.password"
-          >
-            <template #append>
-              <q-icon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </q-input>
-        </InputBox>
-
-        <InputBox title="性別">
-          <q-field borderless v-model="memberData.gender" :rules="[(val) => !!val || '必填']">
             <template v-slot:control>
-              <div class="q-gutter-x-sm">
-                <q-option-group
-                  v-model="memberData.gender"
-                  :options="genderOptions"
-                  color="primary"
-                  inline
+              <div class="option">
+                <input
+                  class="option__input"
+                  type="checkbox"
+                  id="consent"
+                  v-model="memberData.consentChecked"
                 />
+                <div class="option__label" @click="openConsent">我同意個人資料使用說明</div>
+                <q-dialog v-model="consent">
+                  <q-card>
+                    <q-card-section>
+                      <div class="text-h6">個人資料使用說明</div>
+                    </q-card-section>
+
+                    <q-card-section class="q-pt-none">
+                      <p v-for="n in 15" :key="n">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus
+                        sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea
+                        at omnis vel numquam exercitationem aut, natus minima, porro labore.
+                      </p>
+                    </q-card-section>
+
+                    <q-card-actions align="right">
+                      <q-btn flat label="關閉" color="primary" v-close-popup />
+                    </q-card-actions>
+                  </q-card>
+                </q-dialog>
               </div>
             </template>
           </q-field>
-        </InputBox>
+        </div>
 
-        <InputBox title="生日">
-          <q-input filled label="您的生日" lazy-rules :rules="['date']" v-model="birthdate">
-            <template #append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="birthdate">
-                    <div class="row items-center justify-end">
-                      <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                  </q-date>
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-        </InputBox>
-
-        <div class="column justify-center">
-          <q-btn padding="md" label="註冊" type="submit" color="primary" />
+        <div class="button-group row justify-center">
+          <RouterLink :to="{ name: 'login' }">
+            <q-btn class="button" label="取消" color="grey-2" />
+          </RouterLink>
+          <q-btn class="button" label="建立會員" type="submit" color="grey-7" />
         </div>
       </q-form>
     </div>
 
-    <div class="column justify-center q-gutter-y-sm">
-      <p class="q-mt-lg text-center">或是</p>
-
-      <BtnGoogleLogin></BtnGoogleLogin>
-
-      <q-dialog v-model="dialog" position="top" @hide="redirect">
-        <q-card style="width: 350px">
-          <q-card-section v-if="response === 'success'" class="row items-center no-wrap">
-            <q-icon class="q-pr-xs" name="done" size="sm" color="positive"></q-icon>
-            <div class="text-weight-bold">註冊成功</div>
-          </q-card-section>
-
-          <q-card-section v-else class="row items-center no-wrap">
-            <q-icon class="q-pr-xs" name="error" size="sm" color="negative"></q-icon>
-            <div class="text-weight-bold">連線失敗</div>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-    </div>
-    <pre>{{ memberData }}</pre>
+    <q-dialog v-model="dialog" position="top">
+      <q-card style="width: 350px">
+        <q-card-section class="row items-center no-wrap">
+          <q-icon class="q-pr-xs" name="error" size="sm" color="negative"></q-icon>
+          <div class="text-weight-bold">連線失敗</div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use '@/assets/sass/font.scss';
 .register {
-  background-color: #ced4da;
+  background-color: $grey-4;
 
-  padding: 24px;
+  padding: 48px 24px;
 
-  width: 402px;
+  width: 322px;
 
   &__form {
     width: 274px;
   }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.option {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+
+  &__input {
+    appearance: none;
+
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    background-color: $white;
+
+    border: 0 solid $grey-6;
+    transition: border 0.2s;
+  }
+
+  &__input:checked {
+    border: 8px solid $grey-6;
+  }
+
+  &__label {
+    font-size: font.$custom-h6;
+
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.button-group {
+  gap: 54px;
+}
+.button {
+  width: 96px;
+  height: 40px;
+  border-radius: 24px;
+}
+
+:deep(.button.q-btn:before) {
+  box-shadow: none;
+}
+
+.consent-validation {
+  height: 32px;
+}
+
+:deep(.consent-field .q-field__control) {
+  min-height: 32px;
+}
+:deep(.consent-field .q-field__native) {
+  justify-content: center;
+  padding: 0;
+  min-height: 32px;
+}
+
+:deep(.consent-field .q-field__bottom) {
+  padding-top: 4px;
+  padding-left: 34.5px;
+}
+:deep(.consent-field .q-field__messages) {
+  font-size: 12px;
 }
 </style>
