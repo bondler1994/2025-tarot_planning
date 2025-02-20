@@ -8,8 +8,8 @@ const getYear = computed(() => {
 })
 
 const getDate = computed(() => {
-  const options = { month: 'long', day: '2-digit' }
-  return now.value.toLocaleDateString('zh-TW', options)
+  const options = { month: '2-digit', day: '2-digit' }
+  return now.value.toLocaleDateString('zh-TW', options).split('/')
 })
 
 const getWeekday = computed(() => {
@@ -22,13 +22,13 @@ const getWeekday = computed(() => {
   <div class="container">
     <div class="header date">
       <div class="date__header">{{ getYear }}</div>
-      <div class="date__body">{{ getDate }}</div>
+      <div class="date__body">{{ `${getDate[0]} 月 ${getDate[1]} 日` }}</div>
       <div class="date__footer">{{ `(${getWeekday})` }}</div>
     </div>
     <div class="body draw">
       <q-btn class="draw__header" unelevated rounded color="primary" label="本日抽牌" />
 
-      <div class="draw__body">S</div>
+      <div class="draw__body"></div>
     </div>
     <div class="footer backward">
       <div class="backward__header">
@@ -42,6 +42,8 @@ const getWeekday = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+@import '@/assets/sass/font.scss';
+
 .container {
   display: flex;
   flex-direction: column;
@@ -51,14 +53,26 @@ const getWeekday = computed(() => {
 
 .date {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   width: 322px;
   height: 40px;
-  background-color: aqua;
+
+  &__body {
+    margin: 0 14px;
+    font-size: $custom-h2;
+  }
+
+  &__header,
+  &__footer {
+    font-size: $custom-h6;
+  }
 }
 
 .draw {
-  margin: 24px;
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
   width: 322px;
   height: 548px;
   background-color: gray;
@@ -66,6 +80,8 @@ const getWeekday = computed(() => {
 
   &__header {
     width: 96px;
+    position: absolute;
+    bottom: 96px;
   }
 
   &__body {
@@ -80,12 +96,13 @@ const getWeekday = computed(() => {
 
 .backward {
   // font-size: ;
+  font-size: $custom-h6;
   display: flex;
+  align-items: center;
   flex-direction: row;
   margin-top: 24px;
   width: 322px;
   height: 48px;
-  background-color: aqua;
   &__body {
     margin-left: 8px;
   }
