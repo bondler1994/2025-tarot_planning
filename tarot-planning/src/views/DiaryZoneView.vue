@@ -29,18 +29,25 @@ const getWeekday = computed(() => {
     <!-- diary -->
     <div class="body diary">
       <div class="diary__footer icon">
-        <img class="icon__body" src="../../public/shareButton.png" alt="shareButton" />
-        <q-icon name="fa-solid fa-arrow-left" />
+        <div class="icon__header"></div>
+        <div class="icon__body">
+          <img src="../../public/shareButton.png" alt="shareButton" />
+        </div>
+        <div class="icon__footer">
+          <img src="../../public/pen.png" alt="pen" />
+        </div>
       </div>
     </div>
     <!-- backward -->
     <div class="footer backward">
-      <div class="backward__header">
-        <q-icon name="fa-solid fa-arrow-left" />
-      </div>
-      <div class="backward__body">
-        <span>月曆一覽</span>
-      </div>
+      <router-link to="/member/diary/overview" class="backward__link">
+        <div class="backward__header">
+          <q-icon name="fa-solid fa-arrow-left" />
+        </div>
+        <div class="backward__body">
+          <span>月曆一覽</span>
+        </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -95,7 +102,15 @@ const getWeekday = computed(() => {
   }
 
   .icon {
-    &__body {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    &__header,
+    &__body > img,
+    &__footer > img {
       width: 27px;
     }
   }
@@ -103,13 +118,15 @@ const getWeekday = computed(() => {
 
 .backward {
   // font-size: ;
-  font-size: $custom-h6;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  margin-top: 24px;
-  width: 322px;
-  height: 48px;
+  &__link {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    font-size: $custom-h6;
+    margin-top: 24px;
+    width: 322px;
+    height: 48px;
+  }
   &__body {
     margin-left: 8px;
   }
