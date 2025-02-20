@@ -24,12 +24,12 @@ const router = createRouter({
         },
         {
           path: 'register/confirmation',
-          name: 'register-confirmation',
+          name: 'registerConfirmation',
           component: () => import('../views/ConfirmationView.vue'),
         },
         {
           path: 'register/success',
-          name: 'register-success',
+          name: 'registerSuccess',
           component: () => import('../views/RegisterSuccessView.vue'),
         },
         {
