@@ -12,10 +12,30 @@ async function loginGoogle() {
 </script>
 
 <template>
-  <q-btn padding="md" no-caps @click="loginGoogle">
-    <q-icon left size="1.5em" name="fa-brands fa-google"></q-icon>
-    <div>使用 Google 帳戶登入</div>
+  <q-btn class="btn" color="grey-7" no-caps unelevated @click="loginGoogle">
+    <q-icon class="btn__icon" left size="24px" name="fa-brands fa-google"></q-icon>
+    <div class="btn__text">以google帳號建立新會員</div>
   </q-btn>
 </template>
 
-<style></style>
+<style lang="scss" scoped>
+@use '@/assets/sass/font.scss';
+
+.btn {
+  width: 243px;
+  height: 40px;
+  border-radius: 24px;
+
+  &__text {
+    font-size: 15px;
+  }
+}
+
+:deep(.btn.q-btn:before) {
+  box-shadow: none;
+}
+
+:deep(.btn__icon.on-left) {
+  margin-right: 10px;
+}
+</style>
