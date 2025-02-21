@@ -19,7 +19,7 @@ const router = createRouter({
         },
         {
           path: 'register',
-          redirect: to => {
+          redirect: (to) => {
             return { name: 'register' }
           },
           children: [

@@ -41,15 +41,6 @@ const hasInputError = computed(() => {
 function onBlur() {
   isStartValidate.value = true
 }
-
-// const valueValid = ref('')
-// function onBlur() {
-//   if (qInputDOM.value?.hasError) {
-//     valueValid.value = 'failed'
-//   } else {
-//     valueValid.value = 'pass'
-//   }
-// }
 </script>
 
 <template>
@@ -93,20 +84,6 @@ function onBlur() {
           size="24px"
           color="negative"
         ></q-icon>
-
-        <!-- <div v-if="valueValid === ''" class="valid-sign"></div>
-        <q-icon
-          v-if="valueValid === 'pass'"
-          name="check_circle"
-          size="24px"
-          color="positive"
-        ></q-icon>
-        <q-icon
-          v-if="valueValid === 'failed'"
-          name="highlight_off"
-          size="24px"
-          color="negative"
-        ></q-icon> -->
       </div>
     </div>
   </div>
@@ -119,7 +96,6 @@ function onBlur() {
 
   &__label {
     width: 32px;
-    // font-size: 0;
   }
 
   &__body {
