@@ -19,18 +19,26 @@ const router = createRouter({
         },
         {
           path: 'register',
-          name: 'register',
-          component: () => import('../views/RegisterView.vue'),
-        },
-        {
-          path: 'register/confirmation',
-          name: 'register-confirmation',
-          component: () => import('../views/ConfirmationView.vue'),
-        },
-        {
-          path: 'register/success',
-          name: 'register-success',
-          component: () => import('../views/RegisterSuccessView.vue'),
+          redirect: to => {
+            return { name: 'register' }
+          },
+          children: [
+            {
+              path: '',
+              name: 'register',
+              component: () => import('../views/register/RegisterView.vue'),
+            },
+            {
+              path: 'confirmation',
+              name: 'registerConfirmation',
+              component: () => import('../views/register/ConfirmationView.vue'),
+            },
+            {
+              path: 'success',
+              name: 'registerSuccess',
+              component: () => import('../views/register/RegisterSuccessView.vue'),
+            },
+          ],
         },
         {
           path: 'edit',
