@@ -32,7 +32,7 @@
               </q-card>
             </q-carousel-slide>
             <q-carousel-slide name="second" class="carousel__slide column no-wrap">
-              <q-card class="content-card" >
+              <q-card class="content-card">
                 <img src="https://cdn.quasar.dev/img/parallax2.jpg" />
 
                 <q-card-section class="bg-grey-2 text-black text-center">
@@ -62,10 +62,27 @@
         </div>
       </div>
       <div class="button-container">
-        <q-btn v-if="slide !== 'last'" unelevated rounded no-caps color="blue-5" label="Next" class="" dense @click="toNextSlide" />
-        <q-btn v-else unelevated rounded color="blue-5" label="抽牌" dense  @click="$router.push({name:'Draw'})" />
+        <q-btn
+          v-if="slide !== 'last'"
+          unelevated
+          rounded
+          no-caps
+          color="blue-5"
+          label="Next"
+          class=""
+          dense
+          @click="toNextSlide"
+        />
+        <q-btn
+          v-else
+          unelevated
+          rounded
+          color="blue-5"
+          label="抽牌"
+          dense
+          @click="$router.push({ name: 'Draw' })"
+        />
       </div>
-    
     </main>
   </div>
 </template>
@@ -74,9 +91,8 @@
 import { ref } from 'vue'
 const carousel = ref(null)
 
-// 透過按鈕按下一頁
 const toNextSlide = () => {
-  carousel.value.next();
+  carousel.value.next()
 }
 
 const slide = ref('first')
@@ -92,12 +108,6 @@ const summaryLast = '開始撰寫你的塔羅聊癒日記吧'
 <style lang="scss" scoped>
 @import '@/assets/sass/font.scss';
 @import '@/assets/sass/_base.scss';
-
-.custom-carousel .q-carousel__navigation-icon{
-  width: 20px;
-  height: 8px;
-  border-radius: 10px;
-}
 
 .first-visit-container {
   padding: 123px 40px;
@@ -118,6 +128,39 @@ const summaryLast = '開始撰寫你的塔羅聊癒日記吧'
 
   color: $blue-7;
 }
+
+.q-carousel {
+  display: flex;
+  justify-content: center;
+
+  &__slide {
+    padding: 0;
+  }
+}
+
+.content-card {
+  width: 100%;
+  max-width: 240px;
+
+  border-radius: 16px;
+}
+
+.q-card__section {
+  min-height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+img {
+  height: 100%;
+}
+
+.rounded-borders {
+  border-radius: 16px;
+}
+
 .button-container {
   display: flex;
   justify-content: center;
@@ -128,43 +171,7 @@ const summaryLast = '開始撰寫你的塔羅聊癒日記吧'
   padding: 5px 24px;
 }
 
-
-.content-card {
-  width: 100%;
-  max-width: 240px;
-
-  border-radius:16px
-}
-
-.q-card__section {
-  min-height: 72px;
-
- 
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.rounded-borders {
-  border-radius: 16px;
-}
-
-.q-carousel{
-  display: flex;
-  justify-content: center;
-
-  &__slide{
-    padding: 0;
-  }
-}
-
-img {
-  height: 100%;
-}
-
 :deep(.q-carousel__navigation.absolute) {
   bottom: -6px;
 }
-
 </style>
