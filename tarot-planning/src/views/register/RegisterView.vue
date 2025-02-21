@@ -73,15 +73,15 @@ function emailRule(email) {
 
 function passwordRule(password) {
   if (password.length < 8 || password.length > 16) {
-    return '密碼格式錯誤'
+    return '密碼長度須 8~16 位'
   }
 
   if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
-    return '密碼格式錯誤'
+    return '密碼須包含英文大小寫'
   }
 
   if (!/[0-9]/.test(password)) {
-    return '密碼格式錯誤'
+    return '密碼須包含數字'
   }
 
   return true
@@ -216,9 +216,9 @@ async function onSubmit() {
 
         <div class="button-group row justify-center">
           <RouterLink :to="{ name: 'login' }">
-            <q-btn class="button" label="取消" color="grey-2" />
+            <q-btn class="button" label="取消" color="grey-2" unelevated />
           </RouterLink>
-          <q-btn class="button" label="建立會員" type="submit" color="grey-7" />
+          <q-btn class="button" label="建立會員" type="submit" color="grey-7" unelevated />
         </div>
       </q-form>
     </div>
@@ -291,10 +291,7 @@ async function onSubmit() {
   width: 96px;
   height: 40px;
   border-radius: 24px;
-}
-
-:deep(.button.q-btn:before) {
-  box-shadow: none;
+  font-size: 15px;
 }
 
 .consent-validation {
