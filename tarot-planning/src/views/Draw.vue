@@ -94,7 +94,7 @@ const getRevolutionRotateDeg = ({ isChosen }, index) => {
 let isExpanded = ref(0)
 
 const expandCards = () => {
-  if(isExpanded.value > 2) {
+  if (isExpanded.value > 2) {
     isExpanded.value = 0
   }
   isExpanded.value = isExpanded.value + 1
@@ -121,13 +121,24 @@ const getTransition = (index) => {
       @mouseup="handleMouseUp"
       @mousemove="scroll"
     >
-      <button @click="expandCards" style="width: 100px; height: 50px" :style="{ display: isExpanded === 1 ? 'none' : 'inline-block'}">Expand</button>
+      <button
+        @click="expandCards"
+        style="width: 100px; height: 50px"
+        :style="{ display: isExpanded === 1 ? 'none' : 'inline-block' }"
+      >
+        Expand
+      </button>
       <div>
         <div
           v-for="(card, index) in cards"
           :key="card.id"
           class="card-container origin"
-          :class="{ step1: isExpanded === 0, step2: isExpanded === 1, step3: isExpanded === 2, show: card.isFlip }"
+          :class="{
+            step1: isExpanded === 0,
+            step2: isExpanded === 1,
+            step3: isExpanded === 2,
+            show: card.isFlip,
+          }"
           :style="{
             pointerEvents: isDisabled(card.isFlip),
             transform: isExpanded === 2 && !card.isFlip ? getRevolutionRotateDeg(card, index) : '',
@@ -136,7 +147,7 @@ const getTransition = (index) => {
           @click="clickCard(card.id)"
         >
           <div class="card" :class="{ flip: card.isFlip }">
-            <div class="front" :class="{ reversed: true}"></div>
+            <div class="front" :class="{ reversed: true }"></div>
             <div class="back"></div>
           </div>
         </div>
