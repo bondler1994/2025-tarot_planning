@@ -6,6 +6,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  needSignSpace: {
+    type: Boolean,
+    default: true,
+  },
   hasSign: {
     type: Boolean,
     default: false,
@@ -69,7 +73,7 @@ function onBlur() {
         </template>
       </q-input>
     </div>
-    <div class="input-box__valid-sign">
+    <div v-if="needSignSpace" class="input-box__valid-sign">
       <div v-if="hasSign">
         <div v-if="!isStartValidate" class="valid-sign"></div>
         <q-icon
