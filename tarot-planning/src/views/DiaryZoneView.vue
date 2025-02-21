@@ -40,7 +40,7 @@ const getWeekday = computed(() => {
           </div>
         </div>
         <div class="log__body">
-          <q-input v-model="text" filled type="textarea" maxlength="10" />
+          <q-input id="textarea" v-model="text" filled type="textarea" maxlength="500" />
         </div>
       </div>
       <!-- footer -->
@@ -139,6 +139,13 @@ const getWeekday = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  &__body {
+  }
+}
+
+#textarea {
+  height: 476px;
+  overflow: hidden;
 }
 
 .card {
@@ -166,9 +173,12 @@ const getWeekday = computed(() => {
   &__title {
     white-space: 0;
     font-size: $custom-h4;
+    color: #fff;
   }
   &__body {
     height: 107px;
+    color: #fff;
+    line-height: 1.6;
     overflow: auto;
   }
   &__body::-webkit-scrollbar {
@@ -178,13 +188,13 @@ const getWeekday = computed(() => {
 
   /* 設定滾動條軌道（背景）的顏色 */
   &__body::-webkit-scrollbar-track {
-    background: #f1f1f1; /* 滾動條背景顏色 */
+    // background: #f1f1f1; /* 滾動條背景顏色 */
     border-radius: 10px; /* 讓軌道邊角圓滑 */
   }
 
   /* 設定滾動條的顏色 */
   &__body::-webkit-scrollbar-thumb {
-    background: #888; /* 滾動條的顏色 */
+    background: #ffffff; /* 滾動條的顏色 */
     border-radius: 10px; /* 讓滾動條邊角圓滑 */
   }
 
