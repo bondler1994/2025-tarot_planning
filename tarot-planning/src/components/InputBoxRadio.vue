@@ -1,6 +1,4 @@
 <script setup>
-import { useTemplateRef, ref, onMounted } from 'vue'
-
 const props = defineProps({
   title: {
     type: String,

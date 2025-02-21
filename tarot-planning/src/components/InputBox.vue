@@ -22,10 +22,6 @@ const props = defineProps({
     type: String,
     default: 'text',
   },
-  refString: {
-    type: String,
-    default: '',
-  },
 })
 
 const value = defineModel()
