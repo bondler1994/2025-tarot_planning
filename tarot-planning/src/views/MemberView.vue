@@ -83,7 +83,9 @@ const showingMenu = ref(false)
   }
 
   &__logo {
-    padding-left: calc(50% - 45.69px - 8px - 48px);
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
   }
 
   &--no-toggler {
