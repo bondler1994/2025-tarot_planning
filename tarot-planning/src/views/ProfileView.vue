@@ -7,26 +7,27 @@ import {
   passwordConfirmRule,
   emailRule,
 } from '@/features/validateRules.js'
+import { useProfileStore } from '@/stores/profileStore.js'
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBoxRadio from '@/components/InputBoxRadio.vue'
 import InputBox from '@/components/InputBox.vue'
 
 const router = useRouter()
+const profileStore = useProfileStore()
 
-const profileData = ref({
-  email: '15t@example.com',
-  name: '邱蓋',
-  password: 'Pass1234',
-  passwordConfirm: '',
-  gender: 'other',
-  birthdate: '1990-05-15',
+const newProfileData = ref({
+  name: profileStore.profile.name,
+  password: profileStore.profile.password,
+  gender: profileStore.profile.gender,
+  birthdate: profileStore.profile.birthdate,
 })
+
+const passwordConfirm = ref('')
 
 const isDisable = ref({
   email: true,
   name: true,
   password: true,
-  passwordConfirm: true,
   gender: true,
   birthdate: true,
 })
@@ -48,10 +49,10 @@ const genderOptions = ref([
 
 const birthdate = computed({
   get() {
-    return profileData.value.birthdate.split('-').join('/')
+    return newProfileData.value.birthdate.split('-').join('/')
   },
   set(date) {
-    profileData.value.birthdate = date.split('/').join('-')
+    newProfileData.value.birthdate = date.split('/').join('-')
   },
 })
 
@@ -68,13 +69,15 @@ function openDialog() {
 }
 
 async function onSubmit() {
-  console.log(profileData.value)
+  console.log(newProfileData.value)
 
-  const payload = profileData.value
+  const payload = newProfileData.value
 
   try {
     const res = await tarotDiaryAPI.PUT('/api/auth/update', payload)
     console.log(res)
+
+    profileStore.profile = { ...profileStore.profile, ...payload }
 
     isSuccess.value = true
     openDialog()
@@ -103,7 +106,7 @@ function onHide() {
         <InputBox
           title="帳號"
           :hasSign="false"
-          v-model="profileData.email"
+          v-model="profileStore.profile.email"
           :rules="[emailRule]"
           :disable="isDisable.email"
         ></InputBox>
@@ -115,7 +118,7 @@ function onHide() {
           sign="edit"
           :disable="isDisable.password"
           @update:disable="isDisable.password = $event"
-          v-model="profileData.password"
+          v-model="newProfileData.password"
           :rules="[passwordRule]"
         ></InputBox>
 
@@ -124,8 +127,8 @@ function onHide() {
           type="password"
           :hasSign="true"
           sign="edit"
-          v-model="profileData.passwordConfirm"
-          :rules="[(val) => passwordConfirmRule(val, profileData.password)]"
+          v-model="passwordConfirm"
+          :rules="[(val) => passwordConfirmRule(val, newProfileData.password)]"
         ></InputBox>
 
         <InputBox
@@ -134,13 +137,13 @@ function onHide() {
           sign="edit"
           :disable="isDisable.name"
           @update:disable="isDisable.name = $event"
-          v-model="profileData.name"
+          v-model="newProfileData.name"
           :rules="[requiredRule]"
         ></InputBox>
 
         <InputBoxRadio
           title="性別"
-          v-model="profileData.gender"
+          v-model="newProfileData.gender"
           :rules="[requiredRule]"
           :options="genderOptions"
           :disable="isDisable.gender"
@@ -156,7 +159,7 @@ function onHide() {
             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
               <q-date v-model="birthdate">
                 <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Close" color="primary" flat />
+                  <q-btn v-close-popup label="確定" color="primary" flat />
                 </div>
               </q-date>
             </q-popup-proxy>
