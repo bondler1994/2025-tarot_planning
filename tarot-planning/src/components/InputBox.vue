@@ -26,6 +26,10 @@ const props = defineProps({
     type: String,
     default: 'text',
   },
+  disable: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const value = defineModel()
@@ -67,6 +71,7 @@ function onBlur() {
         no-error-icon
         ref="qInputDOM"
         @blur.once="onBlur"
+        :disable="disable"
       >
         <template #append>
           <slot></slot>
