@@ -31,7 +31,15 @@ const value = defineModel()
       <div class="label">{{ title }}</div>
     </div>
     <div class="input-box__body">
-      <q-field class="input" borderless dense v-model="value" :rules="rules" no-error-icon>
+      <q-field
+        class="input"
+        borderless
+        dense
+        v-model="value"
+        :rules="rules"
+        no-error-icon
+        :disable="disable"
+      >
         <template v-slot:control>
           <div class="option" v-for="(option, index) in options" :key="index">
             <input
@@ -40,7 +48,6 @@ const value = defineModel()
               :id="option.value"
               v-model="value"
               :value="option.value"
-              :disabled="disable"
             />
             <label class="option__label" :for="option.value">{{ option.label }}</label>
           </div>
