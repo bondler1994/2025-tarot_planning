@@ -43,6 +43,11 @@ const router = createRouter({
               name: 'registerSuccess',
               component: () => import('../views/register/RegisterSuccessView.vue'),
             },
+            {
+              path: 'google-update',
+              name: 'registerGoogleUpdate',
+              component: () => import('../views/register/RegisterGoogleUpdateView.vue'),
+            },
           ],
         },
         {
