@@ -1,5 +1,7 @@
 <script setup>
 import { useTemplateRef, ref, computed } from 'vue'
+import ValidateSign from './ValidateSign.vue'
+import EditSign from './EditSign.vue'
 
 const props = defineProps({
   title: {
@@ -13,6 +15,10 @@ const props = defineProps({
   hasSign: {
     type: Boolean,
     default: false,
+  },
+  sign: {
+    type: String,
+    default: 'validate',
   },
   rules: {
     type: Array,
@@ -32,19 +38,13 @@ const props = defineProps({
   },
 })
 
+const emits = defineEmits(['update:disable'])
+
 const value = defineModel()
 
 const isStartValidate = ref(false)
 
 const qInputDOM = useTemplateRef('qInputDOM')
-
-const hasInputError = computed(() => {
-  if (qInputDOM.value?.hasError) {
-    return 'failed'
-  } else {
-    return 'pass'
-  }
-})
 
 function onBlur() {
   isStartValidate.value = true
@@ -64,6 +64,7 @@ function onBlur() {
         color="white"
         bg-color="grey-6"
         class="input"
+        :class="sign !== 'edit' ? '' : disable ? '' : 'input--focus'"
         v-model="value"
         :rules="rules"
         lazy-rules
@@ -80,19 +81,16 @@ function onBlur() {
     </div>
     <div v-if="needSignSpace" class="input-box__valid-sign">
       <div v-if="hasSign">
-        <div v-if="!isStartValidate" class="valid-sign"></div>
-        <q-icon
-          v-if="isStartValidate && hasInputError === 'pass'"
-          name="check_circle"
-          size="24px"
-          color="positive"
-        ></q-icon>
-        <q-icon
-          v-if="isStartValidate && hasInputError === 'failed'"
-          name="highlight_off"
-          size="24px"
-          color="negative"
-        ></q-icon>
+        <ValidateSign
+          v-if="sign === 'validate'"
+          :isStartValidate="isStartValidate"
+          :hasError="qInputDOM?.hasError"
+        ></ValidateSign>
+
+        <EditSign
+          v-if="sign === 'edit'"
+          @update:disable="emits('update:disable', $event)"
+        ></EditSign>
       </div>
     </div>
   </div>
@@ -116,6 +114,10 @@ function onBlur() {
     width: 24px;
     height: 24px;
   }
+}
+
+:deep(.input--focus .q-field__control) {
+  border: 2px solid $black;
 }
 
 :deep(.input .q-field__control),
