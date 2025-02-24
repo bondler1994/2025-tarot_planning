@@ -21,15 +21,16 @@
 .register {
   background-color: $grey-4;
 
-  padding: 24px;
+  padding: 36px 24px;
 
   width: 322px;
 
-  gap: 24px;
+  gap: 28px;
 }
 
 .title {
   font-size: font.$custom-h2;
+  line-height: 40px;
 }
 
 .description {
