@@ -16,6 +16,10 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  disable: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const value = defineModel()
@@ -36,6 +40,7 @@ const value = defineModel()
               :id="option.value"
               v-model="value"
               :value="option.value"
+              :disabled="disable"
             />
             <label class="option__label" :for="option.value">{{ option.label }}</label>
           </div>
