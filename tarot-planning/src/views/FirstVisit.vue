@@ -1,3 +1,21 @@
+<script setup>
+import { ref } from 'vue'
+const carousel = ref(null)
+
+const toNextSlide = () => {
+  carousel.value.next()
+}
+
+const slide = ref('first')
+const summaryFirstTop = '歡迎來到塔羅聊癒日記'
+const summaryFirstBottom = '一個結合塔羅牌與日記的網站'
+const summarySecondTop = '每天你可以抽一張塔羅牌'
+const summarySecondBottom = '來代表你今天的運勢'
+const summaryThirdTop = '並且可以撰寫你的心情日記'
+const summaryThirdBottom = '時時刻刻可以回來瀏覽'
+const summaryLast = '開始撰寫你的塔羅聊癒日記吧'
+</script>
+
 <template>
   <div class="first-visit-container">
     <main class="introduce-container">
@@ -87,27 +105,10 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-const carousel = ref(null)
-
-const toNextSlide = () => {
-  carousel.value.next()
-}
-
-const slide = ref('first')
-const summaryFirstTop = '歡迎來到塔羅聊癒日記'
-const summaryFirstBottom = '一個結合塔羅牌與日記的網站'
-const summarySecondTop = '每天你可以抽一張塔羅牌'
-const summarySecondBottom = '來代表你今天的運勢'
-const summaryThirdTop = '並且可以撰寫你的心情日記'
-const summaryThirdBottom = '時時刻刻可以回來瀏覽'
-const summaryLast = '開始撰寫你的塔羅聊癒日記吧'
-</script>
 
 <style lang="scss" scoped>
-@import '@/assets/sass/font.scss';
-@import '@/assets/sass/_base.scss';
+@use '@/assets/sass/font.scss' as *;
+@use '@/assets/sass/_base.scss' as *;
 
 .first-visit-container {
   padding: 123px 40px;
@@ -121,10 +122,14 @@ const summaryLast = '開始撰寫你的塔羅聊癒日記吧'
   border-radius: 36px;
 
   padding: 32px 33px;
+  margin: 0 auto;
+
+  max-width: 322px;
 }
 .title {
   font-size: $custom-h1;
   font-weight: $semi-bold;
+  white-space: nowrap;
 
   color: $blue-7;
 }
