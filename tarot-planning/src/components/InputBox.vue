@@ -1,5 +1,5 @@
 <script setup>
-import { useTemplateRef, ref, computed } from 'vue'
+import { useTemplateRef, ref } from 'vue'
 import ValidateSign from './ValidateSign.vue'
 import EditSign from './EditSign.vue'
 
@@ -118,6 +118,10 @@ function onBlur() {
 
 :deep(.input--focus .q-field__control) {
   border: 2px solid $black;
+}
+
+:deep(.input--focus .q-field__control-container) {
+  height: auto;
 }
 
 :deep(.input .q-field__control),
