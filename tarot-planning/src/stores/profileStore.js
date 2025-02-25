@@ -11,7 +11,13 @@ export const useProfileStore = defineStore('profileStore', () => {
     birthdate: '1990-05-15',
   })
 
+  function updateProfile(data) {
+    // 之後應該要改成從 API 回來的資料
+    profile.value = {...profile.value, ...data}
+  }
+
   return {
     profile,
+    updateProfile
   }
 })

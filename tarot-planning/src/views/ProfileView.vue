@@ -77,7 +77,7 @@ async function onSubmit() {
     const res = await tarotDiaryAPI.PUT('/api/auth/update', payload)
     console.log(res)
 
-    profileStore.profile = { ...profileStore.profile, ...payload }
+    profileStore.updateProfile(payload)
 
     isSuccess.value = true
     openDialog()
