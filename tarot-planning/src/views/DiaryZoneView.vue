@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import api from '@/features/tarotDiaryAPI.js'
+// import api from '@/features/tarotDiaryAPI.js'
 
 const now = ref(new Date())
 
@@ -36,12 +36,12 @@ const interpretations = ref([
     },
   },
   {
-    created_at: '2025-02-24',
+    created_at: new Date().toISOString().split('T')[0],
     user_entry_text: '今天學到了如何克服困難。',
     tarot_card: {
       image: 'https://example.com/another-card-image.jpg',
       name: '力量',
-      is_upright: 'false',
+      is_upright: 'true',
       blessing_message: '面對挑戰時，保持冷靜和堅定。',
     },
   },
@@ -61,10 +61,9 @@ const fetchInterpretation = async () => {
 
 onMounted(fetchInterpretation)
 
-// const isUpright = computed(() => {
-//   const currentInterpretation = interpretations.value[0]
-//   return currentInterpretation.tarot_card.is_upright === 'true' ? '正位' : '逆位'
-// })
+const isUpright = computed(() => {
+  return interpretations.value[0].tarot_card.is_upright === 'true' ? '正位' : '逆位'
+})
 </script>
 
 <template>
@@ -86,7 +85,9 @@ onMounted(fetchInterpretation)
             v-for="(interpretation, index) in interpretations"
             :key="interpretation.id || index"
           >
-            <span class="interpretation__title">{{ interpretation.tarot_card.name }}</span>
+            <span class="interpretation__title">{{
+              `${interpretation.tarot_card.name} - ${isUpright}`
+            }}</span>
             <div class="interpretation__body">
               {{ interpretation.tarot_card.blessing_message }}
             </div>
@@ -95,7 +96,6 @@ onMounted(fetchInterpretation)
         <div class="log__body">
           <q-input
             class="textarea"
-            v-model="text"
             standout
             type="textarea"
             maxlength="500"
