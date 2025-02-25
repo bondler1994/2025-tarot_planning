@@ -1,6 +1,6 @@
 <script setup>
-import { useTemplateRef, ref } from 'vue'
-import ValidateSign from './ValidateSign.vue'
+import { useTemplateRef, ref, computed } from 'vue'
+import InputStatus from './InputStatus.vue'
 import EditSign from './EditSign.vue'
 
 const props = defineProps({
@@ -46,6 +46,18 @@ const isStartValidate = ref(false)
 
 const qInputDOM = useTemplateRef('qInputDOM')
 
+const signStatus = computed(() => {
+  if (!isStartValidate.value) {
+    return 'pending'
+  }
+
+  if (!qInputDOM.value?.hasError) {
+    return 'checked'
+  }
+
+  return 'error'
+})
+
 function onBlur() {
   isStartValidate.value = true
 }
@@ -81,11 +93,7 @@ function onBlur() {
     </div>
     <div v-if="needSignSpace" class="input-box__valid-sign">
       <div v-if="hasSign">
-        <ValidateSign
-          v-if="sign === 'validate'"
-          :isStartValidate="isStartValidate"
-          :hasError="qInputDOM?.hasError"
-        ></ValidateSign>
+        <InputStatus v-if="sign === 'validate'" :signStatus="signStatus"></InputStatus>
 
         <EditSign
           v-if="sign === 'edit'"
