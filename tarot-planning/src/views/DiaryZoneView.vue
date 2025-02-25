@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 // import api from '@/features/tarotDiaryAPI.js'
 
+// 設定時間
 const now = ref(new Date())
 
 const getYear = computed(() => {
@@ -18,12 +19,12 @@ const getWeekday = computed(() => {
   return now.value.toLocaleDateString('zh-TW', options)[1]
 })
 
+// 設定擷取時間得前段 前段＝日期 終端＝T 後段＝時間
 const todayString = computed(() => {
   return now.value.toISOString().split('T')
 })
 
-// const diaryId = ref(1)
-// const cursor = ref(null)
+// 提供給解析用的fn，目前內容為假資料。因為沒有 id，所以用擷取日期得方式偵測最新得卡牌內容
 const interpretations = ref([
   {
     created_at: '2024-05-05',
@@ -47,6 +48,7 @@ const interpretations = ref([
   },
 ])
 
+// 透過
 const fetchInterpretation = async () => {
   try {
     // const response = api.GET('/api/diaries')
@@ -96,10 +98,11 @@ const isUpright = computed(() => {
         <div class="log__body">
           <q-input
             class="textarea"
-            standout
             type="textarea"
             maxlength="500"
             :style="{ resize: 'a' }"
+            borderless
+            bg-color="transparent"
           />
         </div>
       </div>
