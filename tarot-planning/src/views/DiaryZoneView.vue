@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import api from '@/features/tarotDiaryAPI.js'
 
 const now = ref(new Date())
 
@@ -16,6 +17,54 @@ const getWeekday = computed(() => {
   const options = { weekday: 'short' }
   return now.value.toLocaleDateString('zh-TW', options)[1]
 })
+
+const todayString = computed(() => {
+  return now.value.toISOString().split('T')
+})
+
+// const diaryId = ref(1)
+// const cursor = ref(null)
+const interpretations = ref([
+  {
+    created_at: '2024-05-05',
+    user_entry_text: '今天遇到了一個挑戰，我學會了如何應對。',
+    tarot_card: {
+      image: 'https://example.com/card-image.jpg',
+      name: '愚者',
+      is_upright: 'true',
+      blessing_message: '勇敢地踏出新的步伐，這是充滿可能性的時刻。',
+    },
+  },
+  {
+    created_at: '2025-02-24',
+    user_entry_text: '今天學到了如何克服困難。',
+    tarot_card: {
+      image: 'https://example.com/another-card-image.jpg',
+      name: '力量',
+      is_upright: 'false',
+      blessing_message: '面對挑戰時，保持冷靜和堅定。',
+    },
+  },
+])
+
+const fetchInterpretation = async () => {
+  try {
+    // const response = api.GET('/api/diaries')
+    interpretations.value = await interpretations.value.filter(
+      (entry) => entry.created_at === todayString.value[0],
+    )
+  } catch (error) {
+    console.error('獲取資料失敗', error)
+    alert('無法載入')
+  }
+}
+
+onMounted(fetchInterpretation)
+
+// const isUpright = computed(() => {
+//   const currentInterpretation = interpretations.value[0]
+//   return currentInterpretation.tarot_card.is_upright === 'true' ? '正位' : '逆位'
+// })
 </script>
 
 <template>
@@ -32,15 +81,26 @@ const getWeekday = computed(() => {
       <div class="diary__body log">
         <div class="log__header card">
           <div class="card__header"></div>
-          <div class="card__body interpretation">
-            <span class="interpretation__title">命運之輪</span>
+          <div
+            class="card__body interpretation"
+            v-for="(interpretation, index) in interpretations"
+            :key="interpretation.id || index"
+          >
+            <span class="interpretation__title">{{ interpretation.tarot_card.name }}</span>
             <div class="interpretation__body">
-              從1970年代末到1980年代，盧卡斯出品了《星際大戰》三部曲。他曾説第一部星戰（第四部曲）的人物及故事是參照日本導演黑澤明的《戰國英豪》（隠し砦の三悪人）所創作而成；原三部曲以二戰英德大戰為架構並融入美國西部片及日本武士刀劇的節奏；藴涵了太空冒險、希臘神話的大視野製作。這部太空歌劇中所使用的特效技術重新定義並改變了往後太空科
+              {{ interpretation.tarot_card.blessing_message }}
             </div>
           </div>
         </div>
         <div class="log__body">
-          <q-input id="textarea" v-model="text" filled type="textarea" maxlength="500" />
+          <q-input
+            class="textarea"
+            v-model="text"
+            standout
+            type="textarea"
+            maxlength="500"
+            :style="{ resize: 'a' }"
+          />
         </div>
       </div>
       <!-- footer -->
@@ -139,11 +199,9 @@ const getWeekday = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  &__body {
-  }
 }
 
-#textarea {
+.textarea {
   height: 476px;
   overflow: hidden;
 }
