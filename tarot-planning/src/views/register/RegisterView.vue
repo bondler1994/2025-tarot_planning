@@ -1,6 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import {
+  requiredRule,
+  emailRule,
+  passwordRule,
+  passwordConfirmRule,
+  confirmRule,
+} from '@/features/validateRules.js'
 
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBox from '@/components/InputBox.vue'
@@ -54,55 +61,6 @@ function openDialog() {
   dialog.value = true
 }
 
-function requiredRule(val) {
-  if (!(val && val.length > 0)) {
-    return '必填'
-  }
-
-  return true
-}
-
-function emailRule(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-  if (!emailRegex.test(email)) {
-    return 'email 格式不正確'
-  }
-  return true
-}
-
-function passwordRule(password) {
-  if (password.length < 8 || password.length > 16) {
-    return '密碼長度須 8~16 位'
-  }
-
-  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
-    return '密碼須包含英文大小寫'
-  }
-
-  if (!/[0-9]/.test(password)) {
-    return '密碼須包含數字'
-  }
-
-  return true
-}
-
-function passwordConfirmRule(val) {
-  if (!(val === memberData.value.password)) {
-    return '密碼不相同'
-  }
-
-  return true
-}
-
-function confirmRule(val) {
-  if (!val) {
-    return '請勾選'
-  }
-
-  return true
-}
-
 async function onSubmit() {
   console.log(memberData.value)
 
@@ -148,7 +106,7 @@ async function onSubmit() {
           type="password"
           :hasSign="true"
           v-model="memberData.passwordConfirm"
-          :rules="[passwordConfirmRule]"
+          :rules="[(val) => passwordConfirmRule(val, memberData.password)]"
         ></InputBox>
 
         <InputBox title="暱稱" v-model="memberData.name" :rules="[requiredRule]"></InputBox>
