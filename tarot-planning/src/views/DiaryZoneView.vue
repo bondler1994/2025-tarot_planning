@@ -1,5 +1,7 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import html2canvas from 'html2canvas'
+
 // import api from '@/features/tarotDiaryAPI.js'
 
 // 設定時間
@@ -92,6 +94,58 @@ const saveEditing = async () => {
     alert('無法儲存')
   }
 }
+
+// 截圖專用
+const isCapturing = ref(false)
+
+const captureScreenshot = async () => {
+  isCapturing.value = true
+
+  await nextTick()
+
+  // 只選擇 .diary__body 作為截圖範圍
+  const targetElement = document.querySelector('.diary__body')
+
+  if (targetElement) {
+    const canvas = await html2canvas(targetElement)
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+    const date = new Date()
+    const file = new File(
+      [blob],
+      `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.png`,
+      { type: 'image/png' },
+    )
+
+    const isDesktop = !/Mobi|Android/i.test(navigator.userAgent)
+
+    if (isDesktop) {
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_tarot`
+      link.style.display = 'none'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    } else {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: '今日塔羅',
+          text: '來看看我今天抽到了什麼吧！',
+          files: [file],
+        })
+        console.log('分享成功！')
+      } else {
+        console.error('不支援分享此類型的內容')
+      }
+    }
+  } else {
+    console.error('.diary__body 元素未找到')
+  }
+
+  isCapturing.value = false
+}
 </script>
 
 <template>
@@ -126,7 +180,7 @@ const saveEditing = async () => {
             v-if="isEditing"
             v-model="tempEdtingLog"
             class="textarea"
-            input-class="white__text"
+            input-class="white__text fixed-height"
             type="textarea"
             maxlength="300"
             color="white"
@@ -134,15 +188,22 @@ const saveEditing = async () => {
             bg-color="transparent"
             resize="none"
             autogrow
+            :rows="1"
+            :dense="true"
           />
-          <div v-else class="log__text">{{ interpretations[0].user_entry_text }}</div>
+          <p v-else class="log__text">{{ interpretations[0].user_entry_text }}</p>
         </div>
       </div>
       <!-- footer -->
       <div class="diary__footer icon">
         <div class="icon__header"></div>
         <div class="icon__body">
-          <img v-if="!isEditing" src="../../public/shareButton.png" alt="shareButton" />
+          <img
+            v-if="!isEditing"
+            @click="captureScreenshot"
+            src="../../public/shareButton.png"
+            alt="shareButton"
+          />
         </div>
         <div class="icon__footer">
           <img v-if="!isEditing" @click="startEditing" src="../../public/pen.png" alt="pen" />
@@ -206,6 +267,7 @@ const saveEditing = async () => {
   &__body {
     width: 322px;
     height: inherit;
+
     background-color: gray;
     padding: 24px;
   }
@@ -252,6 +314,11 @@ const saveEditing = async () => {
 .textarea {
   height: 476px;
   overflow: hidden;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: space-between;
 }
 
 .card {
