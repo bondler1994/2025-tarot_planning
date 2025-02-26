@@ -1,8 +1,18 @@
 <script setup>
+import EditSign from './EditSign.vue'
+
 const props = defineProps({
   title: {
     type: String,
     default: '',
+  },
+  hasSign: {
+    type: Boolean,
+    default: false,
+  },
+  sign: {
+    type: String,
+    default: 'validate',
   },
   rules: {
     type: Array,
@@ -23,6 +33,8 @@ const props = defineProps({
 })
 
 const value = defineModel()
+
+const emits = defineEmits(['update:disable'])
 </script>
 
 <template>
@@ -54,7 +66,14 @@ const value = defineModel()
         </template>
       </q-field>
     </div>
-    <div class="input-box__valid-sign"></div>
+    <div class="input-box__valid-sign">
+      <div v-if="hasSign">
+        <EditSign
+          v-if="sign === 'edit'"
+          @update:disable="emits('update:disable', $event)"
+        ></EditSign>
+      </div>
+    </div>
   </div>
 </template>
 

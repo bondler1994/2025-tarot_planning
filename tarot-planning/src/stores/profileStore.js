@@ -13,11 +13,11 @@ export const useProfileStore = defineStore('profileStore', () => {
 
   function updateProfile(data) {
     // 之後應該要改成從 API 回來的資料
-    profile.value = {...profile.value, ...data}
+    profile.value = { ...profile.value, ...data }
   }
 
   return {
     profile,
-    updateProfile
+    updateProfile,
   }
 })

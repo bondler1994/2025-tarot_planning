@@ -90,8 +90,29 @@ async function onSubmit() {
 }
 
 function onHide() {
-  if (isSuccess.value) {
-    router.push({ name: 'member' })
+  isDisable.value = {
+    email: true,
+    name: true,
+    password: true,
+    gender: true,
+    birthdate: true,
+  }
+}
+
+function onCancel() {
+  newProfileData.value = {
+    name: profileStore.profile.name,
+    password: profileStore.profile.password,
+    gender: profileStore.profile.gender,
+    birthdate: profileStore.profile.birthdate,
+  }
+
+  isDisable.value = {
+    email: true,
+    name: true,
+    password: true,
+    gender: true,
+    birthdate: true,
   }
 }
 </script>
@@ -143,17 +164,23 @@ function onHide() {
 
         <InputBoxRadio
           title="性別"
+          :hasSign="true"
+          sign="edit"
           v-model="newProfileData.gender"
           :rules="[requiredRule]"
           :options="genderOptions"
           :disable="isDisable.gender"
+          @update:disable="isDisable.gender = $event"
         ></InputBoxRadio>
 
         <InputBox
           title="生日"
+          :hasSign="true"
+          sign="edit"
           v-model="birthdate"
           :rules="[requiredRule]"
           :disable="isDisable.birthdate"
+          @update:disable="isDisable.birthdate = $event"
         >
           <q-icon name="event" class="cursor-pointer" size="20px">
             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -167,9 +194,7 @@ function onHide() {
         </InputBox>
 
         <div v-if="isEdited" class="button-group row justify-center">
-          <RouterLink :to="{ name: 'member' }">
-            <q-btn class="button" label="取消" color="grey-2" unelevated />
-          </RouterLink>
+          <q-btn class="button" label="取消" color="grey-2" unelevated @click="onCancel" />
           <q-btn class="button" label="確認" type="submit" color="grey-7" unelevated />
         </div>
       </q-form>
