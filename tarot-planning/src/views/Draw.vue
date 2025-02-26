@@ -29,32 +29,6 @@ const isDisabled = (isFlip) => {
 
 let hintShow = ref(false)
 
-let isChosen = false
-const clickCard = async (id) => {
-  if (isDragging) return
-  const card = cards.value.find((card) => card.id === id)
-  card.isFlip = !card.isFlip
-  isChosen = true
-
-  setTimeout(() => {
-    card.inHint = true
-
-    setTimeout(() => {
-      hintShow.value = true
-    }, 500)
-  }, 3000)
-
-  // setTimeout(() => {
-  //   html2canvas(document.body).then(function(canvas) {
-  //     document.body.appendChild(canvas);
-  //   });
-  // }, 4000)
-
-  // setTimeout(() => {
-  //   router.push({ name: 'Share' })
-  // }, 4000)
-}
-
 let isDown = false
 let startX
 let scrollLeft
@@ -73,7 +47,7 @@ const handleMouseUp = () => {
   }, 50)
 }
 
-let hoverTarget = ref(null)
+const hoverTarget = ref(null)
 
 const scroll = (e) => {
   if (!isDown) return
@@ -89,6 +63,34 @@ const scroll = (e) => {
     hoverTarget.value = targetCard
     // console.log(hoverTarget.value)
   }
+}
+
+const isChosen = ref(false)
+const clickCard = async (id) => {
+  if (isDragging) return
+  const card = cards.value.find((card) => card.id === id)
+  card.isFlip = !card.isFlip
+  isChosen.value = true
+
+  hoverTarget.value = null
+
+  setTimeout(() => {
+    card.inHint = true
+
+    setTimeout(() => {
+      hintShow.value = true
+    }, 500)
+  }, 3000)
+
+  // setTimeout(() => {
+  //   html2canvas(document.body).then(function(canvas) {
+  //     document.body.appendChild(canvas);
+  //   });
+  // }, 4000)
+
+  // setTimeout(() => {
+  //   router.push({ name: 'Share' })
+  // }, 4000)
 }
 
 onMounted(() => {
@@ -180,7 +182,7 @@ const toCreateDiary = () => {
             showHint: card.inHint,
           }"
           :style="{
-            pointerEvents: isDisabled(card.isFlip),
+            pointerEvents: isDisabled(isChosen),
             transform: isExpanded >= 2 && !card.isFlip ? getRevolutionRotateDeg(index) : '',
             transition: card.isFlip ? '' : getTransition(index),
           }"
@@ -226,7 +228,6 @@ const toCreateDiary = () => {
   position: relative;
   overflow: hidden;
 }
-
 .cards {
   position: relative;
   width: 100%;
