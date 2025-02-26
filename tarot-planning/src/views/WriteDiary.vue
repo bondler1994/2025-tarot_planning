@@ -27,7 +27,7 @@ const captureScreenshot = async () => {
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = 'aaa'
+    link.download = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_tarot`
     link.style.display = 'none'
     document.body.appendChild(link)
     link.click()
@@ -65,7 +65,7 @@ const captureScreenshot = async () => {
         </div>
         <div class="diary">
           <div class="q-pa-md">
-            <p v-if="isCapturing" class="fake-content">{{ text }}</p>
+            <p v-if="isCapturing" class="fake-content">{{ text ? text : '以下空白' }}</p>
             <q-input
               v-else
               class="textarea"
@@ -77,7 +77,20 @@ const captureScreenshot = async () => {
               borderless
               autogrow
               maxlength="300"
+              label-color="white"
             />
+            <!-- <p class="fake-content">{{ text }}</p>
+            <q-input
+              class="textarea"
+              type="textarea"
+              input-class="my-textarea"
+              v-model="text"
+              placeholder="寫下自己今天的心情吧！"
+              :filled="false"
+              borderless
+              autogrow
+              maxlength="300"
+            /> -->
           </div>
         </div>
       </div>
@@ -168,7 +181,9 @@ main {
     line-height: 18px;
     font-weight: 400;
     letter-spacing: 0.00937em;
-    margin: 0;
+    min-height: 52px;
+    margin: 2.5px 0 2.5px;
+    word-break: break-word;
   }
 }
 

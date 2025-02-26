@@ -82,8 +82,6 @@ const scroll = (e) => {
   const walk = x - startX
   e.currentTarget.scrollLeft = scrollLeft - walk
 
-  // console.log(e.targetTouches[0].pageY)
-  console.log(e)
   if (e.touches && isExpanded.value === 3) {
     // const position = e.targetTouches[0].pageY / e.target.clientHeight
     const position = e.targetTouches[0].pageY / window.outerHeight
@@ -226,6 +224,7 @@ const toCreateDiary = () => {
 .draw-background {
   height: 100dvh;
   position: relative;
+  overflow: hidden;
 }
 
 .cards {
