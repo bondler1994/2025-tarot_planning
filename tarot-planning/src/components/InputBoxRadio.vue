@@ -1,8 +1,18 @@
 <script setup>
+import EditSign from './EditSign.vue'
+
 const props = defineProps({
   title: {
     type: String,
     default: '',
+  },
+  hasSign: {
+    type: Boolean,
+    default: false,
+  },
+  sign: {
+    type: String,
+    default: 'validate',
   },
   rules: {
     type: Array,
@@ -16,9 +26,15 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  disable: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const value = defineModel()
+
+const emits = defineEmits(['update:disable'])
 </script>
 
 <template>
@@ -27,7 +43,15 @@ const value = defineModel()
       <div class="label">{{ title }}</div>
     </div>
     <div class="input-box__body">
-      <q-field class="input" borderless dense v-model="value" :rules="rules" no-error-icon>
+      <q-field
+        class="input"
+        borderless
+        dense
+        v-model="value"
+        :rules="rules"
+        no-error-icon
+        :disable="disable"
+      >
         <template v-slot:control>
           <div class="option" v-for="(option, index) in options" :key="index">
             <input
@@ -42,7 +66,14 @@ const value = defineModel()
         </template>
       </q-field>
     </div>
-    <div class="input-box__valid-sign"></div>
+    <div class="input-box__valid-sign">
+      <div v-if="hasSign">
+        <EditSign
+          v-if="sign === 'edit'"
+          @update:disable="emits('update:disable', $event)"
+        ></EditSign>
+      </div>
+    </div>
   </div>
 </template>
 

@@ -56,14 +56,14 @@ const router = createRouter({
           ],
         },
         {
-          path: 'edit',
-          name: 'member-edit',
-          component: () => import('../views/EditView.vue'),
+          path: 'profile',
+          name: 'memberProfile',
+          component: () => import('../views/ProfileView.vue'),
         },
         {
           path: 'diary/statistics',
           name: 'statistics',
-          component: () => import('../views/EditView.vue'),
+          component: () => import('../views/ProfileView.vue'),
         },
         {
           path: 'diary/overview',

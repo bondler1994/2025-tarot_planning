@@ -8,22 +8,24 @@ import {
   passwordConfirmRule,
   confirmRule,
 } from '@/features/validateRules.js'
-
+import { useProfileStore } from '@/stores/profileStore.js'
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBox from '@/components/InputBox.vue'
 import InputBoxRadio from '@/components/InputBoxRadio.vue'
 
 const router = useRouter()
+const profileStore = useProfileStore()
 
 const memberData = ref({
   name: '',
   email: '',
   password: '',
-  passwordConfirm: '',
   gender: '',
   birthdate: '',
-  consentChecked: false,
 })
+
+const passwordConfirm = ref('')
+const consentChecked = ref(false)
 
 const genderOptions = ref([
   {
@@ -70,9 +72,9 @@ async function onSubmit() {
     const res = await tarotDiaryAPI.POST('/api/auth/register', payload)
     console.log(res)
 
-    router.push({ name: 'registerConfirmation' })
+    profileStore.updateProfile(payload)
 
-    // openDialog()
+    router.push({ name: 'registerConfirmation' })
   } catch (error) {
     console.log(error)
     openDialog()
@@ -105,7 +107,7 @@ async function onSubmit() {
         <InputBox
           type="password"
           :hasSign="true"
-          v-model="memberData.passwordConfirm"
+          v-model="passwordConfirm"
           :rules="[(val) => passwordConfirmRule(val, memberData.password)]"
         ></InputBox>
 
@@ -123,7 +125,7 @@ async function onSubmit() {
             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
               <q-date v-model="birthdate">
                 <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Close" color="primary" flat />
+                  <q-btn v-close-popup label="確定" color="primary" flat />
                 </div>
               </q-date>
             </q-popup-proxy>
@@ -135,7 +137,7 @@ async function onSubmit() {
             class="consent-field"
             borderless
             dense
-            v-model="memberData.consentChecked"
+            v-model="consentChecked"
             :rules="[confirmRule]"
             no-error-icon
           >
@@ -145,7 +147,7 @@ async function onSubmit() {
                   class="option__input"
                   type="checkbox"
                   id="consent"
-                  v-model="memberData.consentChecked"
+                  v-model="consentChecked"
                 />
                 <div class="option__label" @click="openConsent">我同意個人資料使用說明</div>
                 <q-dialog v-model="consent">

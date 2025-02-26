@@ -9,9 +9,13 @@ import InputBox from '@/components/InputBox.vue'
 const router = useRouter()
 
 const googleUpdateData = ref({
-  name: '',
+  name: '我是菇狗', // 要改成從google來的名稱
   gender: '',
   birthdate: '',
+})
+
+const isDisable = ref({
+  name: true,
 })
 
 const genderOptions = ref([
@@ -71,7 +75,15 @@ async function onSubmit() {
     </div>
     <div class="register__update-form">
       <q-form class="form" @submit="onSubmit">
-        <InputBox title="暱稱" v-model="googleUpdateData.name" :rules="[requiredRule]"></InputBox>
+        <InputBox
+          title="暱稱"
+          :hasSign="true"
+          sign="edit"
+          :disable="isDisable.name"
+          @update:disable="isDisable.name = $event"
+          v-model="googleUpdateData.name"
+          :rules="[requiredRule]"
+        ></InputBox>
 
         <InputBoxRadio
           title="性別"
