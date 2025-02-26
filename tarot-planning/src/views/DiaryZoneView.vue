@@ -48,7 +48,7 @@ const interpretations = ref([
   },
 ])
 
-// 透過
+// 透過此段獲取API內容
 const fetchInterpretation = async () => {
   try {
     // const response = api.GET('/api/diaries')
@@ -63,9 +63,35 @@ const fetchInterpretation = async () => {
 
 onMounted(fetchInterpretation)
 
+//當api來時 判斷api內容之一得isUpright 如果是就正 如果不是就逆
 const isUpright = computed(() => {
   return interpretations.value[0].tarot_card.is_upright === 'true' ? '正位' : '逆位'
 })
+
+// 編輯日誌專用
+const isEditing = ref(false)
+const tempEdtingLog = ref('')
+
+const startEditing = () => {
+  isEditing.value = true
+  return tempEdtingLog.value === interpretations.value[0].user_entry_text
+}
+
+const cancelEditing = () => {
+  isEditing.value = false
+  return tempEdtingLog.value === interpretations.value[0].user_entry_text
+}
+
+const saveEditing = async () => {
+  try {
+    // cosnt response = await api.GET('null')
+    interpretations.value[0].user_entry_text = tempEdtingLog.value
+    isEditing.value = false
+  } catch (error) {
+    console.error('儲存失敗', error)
+    alert('無法儲存')
+  }
+}
 </script>
 
 <template>
@@ -97,23 +123,33 @@ const isUpright = computed(() => {
         </div>
         <div class="log__body">
           <q-input
+            v-if="isEditing"
+            v-model="tempEdtingLog"
             class="textarea"
+            input-class="white__text"
             type="textarea"
             maxlength="300"
-            :style="{ resize: 'a' }"
+            color="white"
             borderless
             bg-color="transparent"
+            resize="none"
+            autogrow
           />
+          <div v-else class="log__text">{{ interpretations[0].user_entry_text }}</div>
         </div>
       </div>
       <!-- footer -->
       <div class="diary__footer icon">
         <div class="icon__header"></div>
         <div class="icon__body">
-          <img src="../../public/shareButton.png" alt="shareButton" />
+          <img v-if="!isEditing" src="../../public/shareButton.png" alt="shareButton" />
         </div>
         <div class="icon__footer">
-          <img src="../../public/pen.png" alt="pen" />
+          <img v-if="!isEditing" @click="startEditing" src="../../public/pen.png" alt="pen" />
+        </div>
+        <div v-if="isEditing" class="edit-actions">
+          <q-btn label="取消" unelevated rounded @click="cancelEditing" color="grey" />
+          <q-btn label="儲存" unelevated rounded @click="saveEditing" color="primary" />
         </div>
       </div>
     </div>
@@ -169,7 +205,7 @@ const isUpright = computed(() => {
 
   &__body {
     width: 322px;
-    height: 500px;
+    height: inherit;
     background-color: gray;
     padding: 24px;
   }
@@ -202,6 +238,15 @@ const isUpright = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  &__text {
+    word-break: break-all;
+    color: #fff;
+  }
+
+  :deep(.white__text) {
+    color: #fff;
+  }
 }
 
 .textarea {
