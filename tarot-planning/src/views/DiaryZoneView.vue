@@ -19,7 +19,7 @@ const getWeekday = computed(() => {
   return now.value.toLocaleDateString('zh-TW', options)[1]
 })
 
-// 設定擷取時間得前段 前段＝日期 終端＝T 後段＝時間
+// 設定擷取時間得前段 前段＝日期 中斷＝T 後段＝時間
 const todayString = computed(() => {
   return now.value.toISOString().split('T')
 })
@@ -99,7 +99,7 @@ const isUpright = computed(() => {
           <q-input
             class="textarea"
             type="textarea"
-            maxlength="500"
+            maxlength="300"
             :style="{ resize: 'a' }"
             borderless
             bg-color="transparent"
@@ -162,20 +162,20 @@ const isUpright = computed(() => {
 
 .diary {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   //   margin-top: 24px;
-  width: 322px;
-  height: 548px;
-  background-color: gray;
-  position: relative;
+  // position: relative;
 
   &__body {
-    width: inherit;
+    width: 322px;
+    height: 500px;
+    background-color: gray;
     padding: 24px;
   }
 
   &__footer {
-    position: absolute;
+    // position: absolute;
     bottom: 0;
     height: 48px;
     width: 100%;
