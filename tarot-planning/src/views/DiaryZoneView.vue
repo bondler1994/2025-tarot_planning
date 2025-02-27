@@ -175,6 +175,7 @@ const captureScreenshot = async () => {
             </div>
           </div>
         </div>
+        <!-- log part -->
         <div class="log__body">
           <q-input
             v-if="isEditing"
@@ -302,7 +303,8 @@ const captureScreenshot = async () => {
   gap: 24px;
 
   &__text {
-    word-break: break-all;
+    // 讓textarea換行
+    white-space: pre-wrap;
     color: #fff;
   }
 
