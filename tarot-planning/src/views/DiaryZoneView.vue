@@ -336,7 +336,7 @@ const captureScreenshot = async () => {
   display: flex;
   gap: 24px;
   &__header {
-    background-image: url('../../public/front.png');
+    background-image: url('/front.png');
     background-size: 100% 100%; /* 讓圖片填滿 div，可能會裁切 */
     background-position: center; /* 置中顯示 */
     background-repeat: no-repeat; /* 不重複 */
