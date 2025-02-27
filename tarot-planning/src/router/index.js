@@ -80,6 +80,11 @@ const router = createRouter({
           name: 'diary-zone',
           component: () => import('@/views/DiaryZoneView.vue'),
         },
+        {
+          path: 'diary/insights',
+          name: 'insights',
+          component: () => import('@/views/EasterEggView.vue'),
+        },
       ],
     },
     {
