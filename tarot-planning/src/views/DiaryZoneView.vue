@@ -190,6 +190,7 @@ const captureScreenshot = async () => {
             resize="none"
             autogrow
             :rows="1"
+            placeholder="輸入今日心情"
             :dense="true"
           />
           <p v-else class="log__text">{{ interpretations[0].user_entry_text }}</p>
@@ -197,7 +198,7 @@ const captureScreenshot = async () => {
       </div>
       <!-- footer -->
       <div class="diary__footer icon">
-        <div class="icon__header"></div>
+        <div class="icon__header" v-if="!isEditing"></div>
         <div class="icon__body">
           <img
             v-if="!isEditing"
@@ -314,13 +315,19 @@ const captureScreenshot = async () => {
 }
 
 .textarea {
-  height: 476px;
+  height: inherit;
   overflow: hidden;
 }
 
 .edit-actions {
   display: flex;
+  width: inherit;
   justify-content: space-between;
+
+  & > * {
+    width: 96px;
+    height: 40px;
+  }
 }
 
 .card {
