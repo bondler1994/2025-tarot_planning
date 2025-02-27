@@ -21,22 +21,25 @@ const getWeekday = computed(() => {
 <template>
   <div class="container">
     <div class="header date">
-      <div class="date__header">{{ getYear }}</div>
+      <div class="date__header">{{ `${getYear}年` }}</div>
       <div class="date__body">{{ `${getDate[0]} 月 ${getDate[1]} 日` }}</div>
       <div class="date__footer">{{ `(${getWeekday})` }}</div>
     </div>
     <div class="body draw">
-      <q-btn class="draw__header" unelevated rounded color="primary" label="本日抽牌" />
-
+      <router-link to="/member/diary-zone" class="draw__header button">
+        <q-btn class="button__header" unelevated rounded color="primary" label="本日抽牌" />
+      </router-link>
       <div class="draw__body"></div>
     </div>
     <div class="footer backward">
-      <div class="backward__header">
-        <q-icon name="fa-solid fa-arrow-left" />
-      </div>
-      <div class="backward__body">
-        <span>月曆一覽</span>
-      </div>
+      <router-link to="/member/diary/overview" class="backward__link">
+        <div class="backward__header">
+          <q-icon name="fa-solid fa-arrow-left" />
+        </div>
+        <div class="backward__body">
+          <span>月曆一覽</span>
+        </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -79,7 +82,6 @@ const getWeekday = computed(() => {
   position: relative;
 
   &__header {
-    width: 96px;
     position: absolute;
     bottom: 96px;
   }
@@ -96,13 +98,15 @@ const getWeekday = computed(() => {
 
 .backward {
   // font-size: ;
-  font-size: $custom-h6;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  margin-top: 24px;
-  width: 322px;
-  height: 48px;
+  &__link {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    font-size: $custom-h6;
+    margin-top: 24px;
+    width: 322px;
+    height: 48px;
+  }
   &__body {
     margin-left: 8px;
   }
