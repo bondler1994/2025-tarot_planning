@@ -21,7 +21,7 @@ const getWeekday = computed(() => {
 <template>
   <div class="container">
     <div class="header date">
-      <div class="date__header">{{ getYear }}</div>
+      <div class="date__header">{{ `${getYear}年` }}</div>
       <div class="date__body">{{ `${getDate[0]} 月 ${getDate[1]} 日` }}</div>
       <div class="date__footer">{{ `(${getWeekday})` }}</div>
     </div>

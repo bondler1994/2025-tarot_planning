@@ -152,7 +152,7 @@ const captureScreenshot = async () => {
   <div class="container">
     <!-- date -->
     <div class="header date">
-      <div class="date__header">{{ getYear }}</div>
+      <div class="date__header">{{ `${getYear}年` }}</div>
       <div class="date__body">{{ `${getDate[0]} 月 ${getDate[1]} 日` }}</div>
       <div class="date__footer">{{ `(${getWeekday})` }}</div>
     </div>
@@ -203,12 +203,12 @@ const captureScreenshot = async () => {
           <img
             v-if="!isEditing"
             @click="captureScreenshot"
-            src="../../public/shareButton.png"
+            src="/shareButton.png"
             alt="shareButton"
           />
         </div>
         <div class="icon__footer">
-          <img v-if="!isEditing" @click="startEditing" src="../../public/pen.png" alt="pen" />
+          <img v-if="!isEditing" @click="startEditing" src="/pen.png" alt="pen" />
         </div>
         <div v-if="isEditing" class="edit-actions">
           <q-btn label="取消" unelevated rounded @click="cancelEditing" color="grey" />
@@ -306,6 +306,8 @@ const captureScreenshot = async () => {
   &__text {
     // 讓textarea換行
     white-space: pre-wrap;
+    word-break: break-word;
+
     color: #fff;
   }
 
