@@ -1,9 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import html2canvas from 'html2canvas'
+import { useRouter } from 'vue-router'
 import tarotAPI from '@/features/tarotDiaryAPI'
-import WriteDiary from './WriteDiary.vue'
 
 const cardData = ref({})
 
@@ -18,7 +16,6 @@ const isUpRight = computed(() => {
 })
 
 const router = useRouter()
-const route = useRoute()
 
 const totalCards = 78
 const cards = ref([])
@@ -57,11 +54,9 @@ const scroll = (e) => {
   e.currentTarget.scrollLeft = scrollLeft - walk
 
   if (e.touches && isExpanded.value === 3) {
-    // const position = e.targetTouches[0].pageY / e.target.clientHeight
     const position = e.targetTouches[0].pageY / window.outerHeight
     const targetCard = parseInt(78 * position)
     hoverTarget.value = targetCard
-    // console.log(hoverTarget.value)
   }
 }
 
@@ -78,16 +73,6 @@ const clickCard = async (id) => {
   setTimeout(() => {
       hintShow.value = true
   }, 3000)
-
-  // setTimeout(() => {
-  //   html2canvas(document.body).then(function(canvas) {
-  //     document.body.appendChild(canvas);
-  //   });
-  // }, 4000)
-
-  // setTimeout(() => {
-  //   router.push({ name: 'Share' })
-  // }, 4000)
 }
 
 onMounted(() => {
@@ -97,27 +82,22 @@ onMounted(() => {
 })
 
 const getRevolutionRotateDeg = (index) => {
-  const startDeg = 45
-  const endDeg = 135
-  // const startDeg = 80
-  // const endDeg = 100
+  // const startDeg = 45
+  // const endDeg = 135
+  const startDeg = 80
+  const endDeg = 100
 
   const range = endDeg - startDeg
 
   if (isExpanded.value === 1) {
-    // return `rotate(${startDeg + (range / 78) * index}deg)`
-    // return `rotate(45deg) translateY(-350px)`
-    return `rotate(60deg) translateY(-350px)`
-    // return `${startDeg + (range / 78) * index}deg`
+    // return `rotate(60deg) translateY(-350px)`
+    return `rotate(80deg) translateY(-2000px)`
   } else if (isExpanded.value >= 2) {
-    // return `rotate(${startDeg + (range / 78) * index}deg)`
-    return `rotate(${startDeg + (range / 78) * index}deg) translateY(-350px)`
-
-    // return `rotate(${startDeg + (range / 78) * index}deg) translateY(-8000px)`
-    // return `${startDeg + (range / 78) * index}deg`
+    // return `rotate(${startDeg + (range / 78) * index}deg) translateY(-350px)`
+    return `rotate(${startDeg + (range / 78) * index}deg) translateY(-2000px)`
   } else {
-    // return `60deg`
-    return `rotate(45deg) translateY(-350px)`
+    // return `rotate(45deg) translateY(-350px)`
+    return `rotate(80deg) translateY(-2000px)`
   }
 }
 
@@ -148,7 +128,6 @@ const toCreateDiary = () => {
   opacityTransition.value = true
   setTimeout(() => {
     router.push({ name: 'WriteDiary' })
-    // router.push('/write-diary')
   }, 2000)
 }
 </script>
@@ -297,7 +276,7 @@ const toCreateDiary = () => {
 .flip {
   // transform: rotateY(900deg); //在電腦版會被簡化成180deg
   rotate: y 540deg; //新語法，注意支援度
-  transition: rotate 0.6s 1s ease-in-out;
+  transition: rotate 0.6s 2s ease-in-out;
   // animation: spin 2s ease forwards;
 }
 
@@ -320,33 +299,29 @@ const toCreateDiary = () => {
 
 //step2 移動到坐上角等待展開
 .step2 {
-  transform: rotate(45deg) translateY(-350px);
-  translate: -400px -100px;
-
-  // transform: rotate(80deg) translateY(-2200px);
-  // translate: -8000px -100px;
+  // transform: rotate(45deg) translateY(-350px);
+  // translate: -400px -100px;
+  transform: rotate(80deg) translateY(-2000px);
+  translate: -2170px -100px;
 }
 
 //step3 展開！rotate的角度及transition快慢皆由計算產生
 .step3 {
-  translate: -400px -100px;
-
-  // translate: -8000px -100px;
+  // translate: -400px -100px;
+  translate: -2170px -100px;
 
   &:not(.show) .hover-effect {
-    transform: rotate(-5deg) translateY(-40px);
+    transform: rotate(-5deg) translateY(-100px);
   }
 }
 
 //展示卡牌
 .show {
-  transform: rotate(0deg) translate(-50%, -50%) scale(2.5);
   translate: 0;
+  transform: rotate(0deg) translate(-50%, -50%) scale(2.5);
   z-index: 1;
 
-  // translate: 0 0;
-  // margin: auto;
-  // inset: 0;
+  transition: translate 1s, transform 1s 0.5s;
 }
 
 .hint-card {
@@ -374,7 +349,7 @@ const toCreateDiary = () => {
   align-items: center;
   padding: 40px;
 
-  transition: all 2s 1.5s ease-out;
+  transition: all 2s 2s ease-out;
 
   h4 {
     margin: 0;
@@ -400,6 +375,6 @@ const toCreateDiary = () => {
 
 .card-hide {
   opacity: 0;
-  transition: opacity 1s ease;
+  transition: opacity 1s 0.5s ease;
 }
 </style>
