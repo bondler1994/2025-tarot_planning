@@ -69,17 +69,14 @@ const isChosen = ref(false)
 const clickCard = async (id) => {
   if (isDragging) return
   const card = cards.value.find((card) => card.id === id)
+  card.isChosen = true
   card.isFlip = !card.isFlip
   isChosen.value = true
 
   hoverTarget.value = null
 
   setTimeout(() => {
-    card.inHint = true
-
-    setTimeout(() => {
       hintShow.value = true
-    }, 500)
   }, 3000)
 
   // setTimeout(() => {
@@ -95,7 +92,7 @@ const clickCard = async (id) => {
 
 onMounted(() => {
   for (let i = 0; i < totalCards; i++) {
-    cards.value.push({ id: i, isFlip: false, inHint: false })
+    cards.value.push({ id: i, isFlip: false, isChosen: false })
   }
 })
 
@@ -110,7 +107,7 @@ const getRevolutionRotateDeg = (index) => {
   if (isExpanded.value === 1) {
     // return `rotate(${startDeg + (range / 78) * index}deg)`
     // return `rotate(45deg) translateY(-350px)`
-    return `rotate(45deg) translateY(-350px)`
+    return `rotate(60deg) translateY(-350px)`
     // return `${startDeg + (range / 78) * index}deg`
   } else if (isExpanded.value >= 2) {
     // return `rotate(${startDeg + (range / 78) * index}deg)`
@@ -145,9 +142,14 @@ const getTransition = (index) => {
   }
 }
 
+
+const opacityTransition = ref(false)
 const toCreateDiary = () => {
-  router.replace({ name: 'WriteDiary' })
-  // router.push('/write-diary')
+  opacityTransition.value = true
+  setTimeout(() => {
+    router.push({ name: 'WriteDiary' })
+    // router.push('/write-diary')
+  }, 2000)
 }
 </script>
 
@@ -179,7 +181,6 @@ const toCreateDiary = () => {
             step2: isExpanded === 1,
             step3: isExpanded >= 2,
             show: card.isFlip,
-            showHint: card.inHint,
           }"
           :style="{
             pointerEvents: isDisabled(isChosen),
@@ -200,7 +201,7 @@ const toCreateDiary = () => {
     </h3>
     <div
       class="tarot-hint"
-      :style="{ zIndex: hintShow ? '1' : '-1', opacity: hintShow ? '1' : '0' }"
+      :style="{ zIndex: hintShow ? '1' : '-1', opacity: hintShow && !opacityTransition ? '1' : '0', transition: opacityTransition ? 'opacity 1s ease' : '' }"
     >
       <h4>{{ cardData.tarot_card?.name }} - {{ isUpRight }}</h4>
       <div class="hint-card"></div>
@@ -280,7 +281,7 @@ const toCreateDiary = () => {
   background-image: url(/back.png);
 }
 
-.card-container:not(.chosen):hover .card:not(.flip) {
+.card-container:hover .card:not(.flip) {
   transform: rotate(-5deg) translateY(-10px);
 }
 
@@ -298,11 +299,6 @@ const toCreateDiary = () => {
   rotate: y 540deg; //新語法，注意支援度
   transition: rotate 0.6s 1s ease-in-out;
   // animation: spin 2s ease forwards;
-}
-
-.chosen {
-  // transform: translateX(200px);
-  transition: all 1s ease;
 }
 
 .draw-hint {
@@ -345,24 +341,12 @@ const toCreateDiary = () => {
 //展示卡牌
 .show {
   transform: rotate(0deg) translate(-50%, -50%) scale(2.5);
-  // translate: 0 0;
-  // margin: auto;
   translate: 0;
   z-index: 1;
+
+  // translate: 0 0;
+  // margin: auto;
   // inset: 0;
-}
-
-.showHint {
-  // transform: translate(500%, -115px);
-  // width: 0px;
-  // height: 0px;
-  // z-index: 2;
-  // opacity: 0;
-  // transition: all 1s ease;
-
-  translate: 1000% 0;
-  z-index: 2;
-  transition: all 0.5s ease-in;
 }
 
 .hint-card {
