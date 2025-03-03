@@ -144,6 +144,7 @@ onMounted(async () => {
 @use '@/assets/sass/_base.scss' as *;
 
 .first-visit-container {
+  height: 100vh;
   padding: 123px 40px;
 
   background-color: $blue-2;
