@@ -1,14 +1,15 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import html2canvas from 'html2canvas'
 import tarotAPI from '@/features/tarotDiaryAPI'
-import WriteDiary from './WriteDiary.vue'
+import { useCardStore } from '@/stores/cardDataStore'
 
 const cardData = ref({})
+const cardStore = useCardStore()
 
 const fetchCardData = async () => {
   cardData.value = await tarotAPI.GET('/api/tarot-draw')
+  cardStore.setCardData(cardData.value.tarot_card)
 }
 
 fetchCardData()
@@ -267,17 +268,17 @@ const toCreateDiary = () => {
   backface-visibility: hidden;
 }
 .front {
-  background-image: url(/front.png);
+  background-image: url(/front.png); //todo: 到時候換成API圖片網址
   transform: rotateY(180deg);
 }
 
 .front.reversed {
-  background-image: url(/front.png);
+  background-image: url(/front.png); //todo: 到時候換成API圖片網址
   transform: rotateY(180deg) rotateZ(180deg);
 }
 
 .back {
-  background-image: url(/back.png);
+  background-image: url(/back.png); //todo: 到時候換成API圖片網址
 }
 
 .card-container:not(.chosen):hover .card:not(.flip) {
