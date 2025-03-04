@@ -1,52 +1,70 @@
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import html2canvas from 'html2canvas'
+import { useCardStore } from '@/stores/cardDataStore'
+
+const cardStore = useCardStore()
+const cardData = cardStore.cardData
+console.log(cardData)
+
+const isUpRight = computed(() => {
+  return cardData.is_upright ? '正位' : '逆位'
+})
 
 const text = ref('')
 
 const isCapturing = ref(false)
 const isSharing = ref(false)
 
+const register = ref(false)
+
 const captureScreenshot = async () => {
-  isCapturing.value = true
+  // isCapturing.value = true
 
-  await nextTick()
+  // await nextTick()
 
-  const canvas = await html2canvas(document.querySelector('.diary-block'))
-  const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-  const date = new Date()
-  const file = new File(
-    [blob],
-    `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.png`,
-    { type: 'image/png' },
-  )
+  // const canvas = await html2canvas(document.querySelector('.diary-block'))
+  // const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+  // const date = new Date()
+  // const file = new File(
+  //   [blob],
+  //   `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.png`,
+  //   { type: 'image/png' },
+  // )
 
-  const isDesktop = !/Mobi|Android/i.test(navigator.userAgent)
+  // const isDesktop = !/Mobi|Android/i.test(navigator.userAgent)
 
-  if (isDesktop) {
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_tarot`
-    link.style.display = 'none'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  } else {
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        title: '今日塔羅',
-        text: '來看看我今天抽到了什麼吧！',
-        files: [file],
-      })
-      console.log('分享成功！')
-    } else {
-      console.error('不支援分享此類型的內容')
-    }
-  }
+  // try {
+  //   if (isDesktop) {
+  //     const url = URL.createObjectURL(blob)
+  //     const link = document.createElement('a')
+  //     link.href = url
+  //     link.download = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_tarot`
+  //     link.style.display = 'none'
+  //     document.body.appendChild(link)
+  //     link.click()
+  //     document.body.removeChild(link)
+  //     URL.revokeObjectURL(url)
+  //   } else {
+  //     if (navigator.canShare && navigator.canShare({ files: [file] })) {
+  //       await navigator.share({
+  //         title: '今日塔羅',
+  //         text: '來看看我今天抽到了什麼吧！',
+  //         files: [file],
+  //       })
+  //       console.log('分享成功！')
+  //     } else {
+  //       console.error('不支援分享此類型的內容')
+  //     }
+  //   }
+  // } catch(error) {
+  //   console.log(error)
+  // }
 
-  isCapturing.value = false
+  // isCapturing.value = false
+  //todo: 流程預設是不給分享，直接跳出註冊會員
+
+  register.value = true
 }
 </script>
 
@@ -55,12 +73,13 @@ const captureScreenshot = async () => {
     <main>
       <div class="diary-block">
         <div class="card">
-          <div class="card__img">
-            <img src="/front.png" alt="" />
+          <div class="card__img" :class="cardData.is_upright ? '' : 'reversed'">
+            <img src="/front.png" alt="" /> 
+            <!-- todo: 到時候換成API圖片網址 -->
           </div>
           <div class="card__info info">
-            <h4 class="info__title">命運之輪 - 正位</h4>
-            <p class="info__content">雞湯文字雞湯文字雞湯文字雞湯文字</p>
+            <h4 class="info__title">{{ cardData.name }} - {{ isUpRight }}</h4>
+            <p class="info__content">{{ cardData.blessing_message }}</p>
           </div>
         </div>
         <div class="diary">
@@ -100,6 +119,29 @@ const captureScreenshot = async () => {
         >
       </div>
     </main>
+    <q-dialog v-model="register">
+      <div class="register">
+        <p class="register__content">不想遺漏你的日記嗎？<br>加入會員就可以每天瀏覽過去的日記，更可以跟大家分享你每天的生活喔！</p>
+        <div class="register__button">
+          <q-btn class="btn" color="blue-5" @click="$router.push({ name: 'register' })"><h4>加入會員</h4></q-btn>
+          <q-btn class="btn" color="grey-2" v-close-popup><h4>取消</h4></q-btn>
+        </div>
+      </div>
+      <!-- <q-card>
+        <q-card-section>
+          <div class="text-h6">Alert</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="取消" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card> -->
+    </q-dialog>
+
   </div>
 </template>
 
@@ -141,7 +183,11 @@ main {
   background-color: $yellow-3;
 
   &__img {
-    flex: 1 1 40%;
+    flex: 0 1 64px;
+
+    &.reversed {
+      transform: rotate(180deg);
+    }
 
     img {
       width: 100%;
@@ -149,6 +195,8 @@ main {
   }
 
   &__info {
+    flex: 1 1 60%;
+
     h4,
     p {
       margin: 0;
@@ -184,17 +232,54 @@ main {
     min-height: 52px;
     margin: 2.5px 0 2.5px;
     word-break: break-word;
+    white-space: pre-wrap;
   }
 }
 
 .save-btn {
-  margin: auto;
   @include button;
 
   h4 {
     margin: 0;
     font-size: $custom-h4;
     font-weight: $semi-bold;
+  }
+}
+
+.register {
+  width: 272px;
+  padding: 33px 28px 16px;
+  background-color: $blue-2;
+  border: 8px solid $blue-7;
+  border-radius: 16px;
+  text-align: center;
+
+  &__content {
+    font-size: $custom-h6;
+    line-height: 24px;
+    margin: 0 0 50px;
+  }
+
+  &__button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    .btn {
+      @include button;
+
+      padding: 0;
+      width: 128px;
+      height: 40px;
+
+      h4 {
+        font-size: $custom-h4;
+        font-weight: $semi-bold;
+        margin: 0;
+      }
+
+    }
   }
 }
 </style>
