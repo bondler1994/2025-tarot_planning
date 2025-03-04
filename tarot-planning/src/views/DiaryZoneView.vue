@@ -89,12 +89,20 @@ const saveEditing = async () => {
     // cosnt response = await api.GET('null')
     interpretations.value[0].user_entry_text = tempEdtingLog.value
     isEditing.value = false
+    //儲存後跳通知
+
+    dialog.value = true
+
+    setTimeout(() => {
+      dialog.value = false
+    }, 2000)
   } catch (error) {
     console.error('儲存失敗', error)
     alert('無法儲存')
   }
 }
 
+const dialog = ref(false)
 // 截圖專用
 const isCapturing = ref(false)
 
@@ -214,8 +222,21 @@ const captureScreenshot = async () => {
           <q-btn label="取消" unelevated rounded @click="cancelEditing" color="grey" />
           <q-btn label="儲存" unelevated rounded @click="saveEditing" color="primary" />
         </div>
+        <q-dialog v-model="dialog" position="top">
+          <q-card style="width: 350px">
+            <q-card-section class="row items-center no-wrap">
+              <div>
+                <q-icon class="q-pr-xs" name="check_circle" size="sm" color="positive"></q-icon>
+              </div>
+
+              <q-space></q-space>
+              <div class="text-weight-bold">更新成功</div>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </div>
     </div>
+
     <!-- backward -->
     <div class="footer backward">
       <router-link to="/member/diary/overview" class="backward__link">
