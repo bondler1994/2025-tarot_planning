@@ -39,7 +39,9 @@ const showingMenu = ref(false)
       <div class="menu-item">
         <q-item clickable>
           <q-item-section>
-            <RouterLink :to="{ name: 'member' }" @click="showingMenu = false">塔羅日記</RouterLink>
+            <RouterLink :to="{ name: 'today-draw' }" @click="showingMenu = false"
+              >塔羅日記</RouterLink
+            >
           </q-item-section>
         </q-item>
         <q-item clickable>

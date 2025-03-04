@@ -105,7 +105,6 @@ const summaryLast = '開始撰寫你的塔羅聊癒日記吧'
   </div>
 </template>
 
-
 <style lang="scss" scoped>
 @use '@/assets/sass/font.scss' as *;
 @use '@/assets/sass/_base.scss' as *;
