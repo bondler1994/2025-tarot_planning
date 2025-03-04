@@ -74,7 +74,7 @@ const captureScreenshot = async () => {
       <div class="diary-block">
         <div class="card">
           <div class="card__img" :class="cardData.is_upright ? '' : 'reversed'">
-            <img src="/front.png" alt="" /> 
+            <img src="/front.png" alt="" />
             <!-- todo: 到時候換成API圖片網址 -->
           </div>
           <div class="card__info info">
@@ -121,9 +121,13 @@ const captureScreenshot = async () => {
     </main>
     <q-dialog v-model="register">
       <div class="register">
-        <p class="register__content">不想遺漏你的日記嗎？<br>加入會員就可以每天瀏覽過去的日記，更可以跟大家分享你每天的生活喔！</p>
+        <p class="register__content">
+          不想遺漏你的日記嗎？<br />加入會員就可以每天瀏覽過去的日記，更可以跟大家分享你每天的生活喔！
+        </p>
         <div class="register__button">
-          <q-btn class="btn" color="blue-5" @click="$router.push({ name: 'register' })"><h4>加入會員</h4></q-btn>
+          <q-btn class="btn" color="blue-5" @click="$router.push({ name: 'register' })"
+            ><h4>加入會員</h4></q-btn
+          >
           <q-btn class="btn" color="grey-2" v-close-popup><h4>取消</h4></q-btn>
         </div>
       </div>
@@ -141,7 +145,6 @@ const captureScreenshot = async () => {
         </q-card-actions>
       </q-card> -->
     </q-dialog>
-
   </div>
 </template>
 
@@ -278,7 +281,6 @@ main {
         font-weight: $semi-bold;
         margin: 0;
       }
-
     }
   }
 }
