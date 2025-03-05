@@ -1,20 +1,18 @@
 <script setup>
-import { ref, nextTick, computed } from 'vue'
-import html2canvas from 'html2canvas'
+import { ref, computed } from 'vue'
 import { useCardStore } from '@/stores/cardDataStore'
+// import html2canvas from 'html2canvas'
+// import { nextTick } from 'vue'
 
 const cardStore = useCardStore()
-const cardData = cardStore.cardData
-console.log(cardData)
 
 const isUpRight = computed(() => {
-  return cardData.is_upright ? '正位' : '逆位'
+  return cardStore.cardData.is_upright ? '正位' : '逆位'
 })
 
 const text = ref('')
 
 const isCapturing = ref(false)
-const isSharing = ref(false)
 
 const register = ref(false)
 
@@ -73,13 +71,13 @@ const captureScreenshot = async () => {
     <main>
       <div class="diary-block">
         <div class="card">
-          <div class="card__img" :class="cardData.is_upright ? '' : 'reversed'">
+          <div class="card__img" :class="cardStore.cardData.is_upright ? '' : 'reversed'">
             <img src="/front.png" alt="" />
             <!-- todo: 到時候換成API圖片網址 -->
           </div>
           <div class="card__info info">
-            <h4 class="info__title">{{ cardData.name }} - {{ isUpRight }}</h4>
-            <p class="info__content">{{ cardData.blessing_message }}</p>
+            <h4 class="info__title">{{ cardStore.cardData.name }} - {{ isUpRight }}</h4>
+            <p class="info__content">{{ cardStore.cardData.blessing_message }}</p>
           </div>
         </div>
         <div class="diary">
@@ -98,18 +96,6 @@ const captureScreenshot = async () => {
               maxlength="300"
               label-color="white"
             />
-            <!-- <p class="fake-content">{{ text }}</p>
-            <q-input
-              class="textarea"
-              type="textarea"
-              input-class="my-textarea"
-              v-model="text"
-              placeholder="寫下自己今天的心情吧！"
-              :filled="false"
-              borderless
-              autogrow
-              maxlength="300"
-            /> -->
           </div>
         </div>
       </div>
@@ -131,19 +117,6 @@ const captureScreenshot = async () => {
           <q-btn class="btn" color="grey-2" v-close-popup><h4>取消</h4></q-btn>
         </div>
       </div>
-      <!-- <q-card>
-        <q-card-section>
-          <div class="text-h6">Alert</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="取消" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card> -->
     </q-dialog>
   </div>
 </template>
