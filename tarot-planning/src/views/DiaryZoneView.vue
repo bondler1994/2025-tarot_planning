@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
+import axios from 'axios'
 
 // import api from '@/features/tarotDiaryAPI.js'
 
@@ -27,43 +28,34 @@ const todayString = computed(() => {
 })
 
 // 提供給解析用的fn，目前內容為假資料。因為沒有 id，所以用擷取日期得方式偵測最新得卡牌內容
-const interpretations = ref([
-  {
-    created_at: '2024-05-05',
-    user_entry_text: '今天遇到了一個挑戰，我學會了如何應對。',
-    tarot_card: {
-      image: 'https://example.com/card-image.jpg',
-      name: '愚者',
-      is_upright: 'true',
-      blessing_message: '勇敢地踏出新的步伐，這是充滿可能性的時刻。',
-    },
-  },
-  {
-    created_at: new Date().toISOString().split('T')[0],
-    user_entry_text: '今天學到了如何克服困難。',
-    tarot_card: {
-      image: 'https://example.com/another-card-image.jpg',
-      name: '力量',
-      is_upright: 'true',
-      blessing_message: '面對挑戰時，保持冷靜和堅定。',
-    },
-  },
-])
+const interpretations = ref([])
 
 // 透過此段獲取API內容
 const fetchInterpretation = async () => {
   try {
-    // const response = api.GET('/api/diaries')
-    interpretations.value = await interpretations.value.filter(
-      (entry) => entry.created_at === todayString.value[0],
+    const response = await axios.get(
+      'https://my-json-server.typicode.com/bondler1994/2024-Web-Camp---JStest/db',
     )
+    interpretations.value = await response.data.entries.filter(
+      (entry) => entry.created_at === '2024-03-07',
+    )
+
+    // interpretations.value = await response.data.entries.filter((entry) => {
+    //   console.log('test', todayString.value[0])
+    //   console.log('test2', entry.created_at)
+    //   return entry.created_at === todayString.value[0]
+    // })
+
+    // console.log(response)
   } catch (error) {
     console.error('獲取資料失敗', error)
     alert('無法載入')
   }
 }
 
-onMounted(fetchInterpretation)
+onMounted(async () => {
+  await fetchInterpretation()
+})
 
 //當api來時 判斷api內容之一得isUpright 如果是就正 如果不是就逆
 const isUpright = computed(() => {
@@ -201,7 +193,7 @@ const captureScreenshot = async () => {
             placeholder="輸入今日心情"
             :dense="true"
           />
-          <p v-else class="log__text">{{ interpretations[0].user_entry_text }}</p>
+          <p v-else class="log__text">{{ interpretations[0]?.user_entry_text }}</p>
         </div>
       </div>
       <!-- footer -->
