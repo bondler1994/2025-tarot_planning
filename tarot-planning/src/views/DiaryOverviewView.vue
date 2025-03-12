@@ -3,7 +3,7 @@ import { onBeforeMount, reactive, ref } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import addDays from 'date-fns/addDays'
-import tarotDiaryAPI from '@/features/tarotDiaryAPI'
+// import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 
 onBeforeMount(() => {
   fetchDairyData()
@@ -22,10 +22,11 @@ const dairyData = ref([])
 // 先弄假資料
 const fakeDairyData = ref([
   {
-    created_at: '2025-02-01',
+    created_at: '2025-03-12',
     user_entry_text: '今天遇到了一個挑戰，我學會了如何應對。',
     tarot_card: {
-      image: 'https://example.com/card-image.jpg',
+      // image: 'https://example.com/card-image.jpg',
+      image: 'https://fakeimg.pl/300/ffffff/',
       name: '愚者',
       is_upright: 'true',
       blessing_message: '勇敢地踏出新的步伐，這是充滿可能性的時刻。',
@@ -48,11 +49,11 @@ const dateNames = ref(['日', '一', '二', '三', '四', '五', '六'])
 const minDate = ref(new Date(2024, 4, 5))
 const markers = ref([
   {
-    date: addDays(new Date('2025-02-01'), 0),
+    date: addDays(new Date('2025-03-12'), 0),
     type: 'dot',
   },
   {
-    date: addDays(new Date('2025-02-02'), 0),
+    date: addDays(new Date('2025-03-11'), 0),
     type: 'dot',
   },
 ])
@@ -67,7 +68,7 @@ const selectedDate = ref(new Date())
 const lastMonth = ref(selectedDate.value.getMonth().toString().padStart(2, '0'))
 const nextMonth = ref((selectedDate.value.getMonth() + 2).toString().padStart(2, '0'))
 
-const userSelectedData = reactive({})
+const userSelectedData = ref({})
 const handleDate = (modelData) => {
   selectedDate.value = modelData
   const selectedDateFormat = selectedDate.value.toISOString().split('T')[0]
@@ -87,7 +88,7 @@ const handleMonthYear = ({ instance, month, year }) => {
   }
 }
 </script>
-<template>
+<template >
   <div class="daily-overview column full-width">
     <VueDatePicker
       class="full-width vue-date-picker"
@@ -118,22 +119,22 @@ const handleMonthYear = ({ instance, month, year }) => {
     </VueDatePicker>
 
     <div class="daily-tarot row q-pa-sm">
-      <div class="col-4 q-mx-auto">
+      <div class="col-4 q-mx-auto row justify-center">
         <div class="daily-tarot-img-box">
           <img
             class="full-width full-height"
-            :src="userSelectedData.value?.tarot_card.image"
-            :alt="userSelectedData.value?.tarot_card.name"
-          />
+            :src="fakeDairyData[0].tarot_card.image"
+            :alt="fakeDairyData[0].tarot_card.name"
+            />
         </div>
       </div>
       <div class="col-8">
-        <p>{{ userSelectedData.value?.tarot_card.name }}</p>
-        <span>{{ userSelectedData.value?.tarot_card.blessing_message }}</span>
+        <p class="daily-tarot-name">{{ fakeDairyData[0].tarot_card.name }}</p>
+        <p class="daily-tarot-blessing-message">{{ fakeDairyData[0].tarot_card.blessing_message }}</p>
       </div>
     </div>
-    <router-link class="text-center" to="">閱讀今天日記</router-link>
-    <a class="q-mt-custom24 full-width text-center" @click="backToToday.setter">{{
+    <router-link class="text-center text-subtitle1 daily-tarot-read-today" to="">閱讀今天日記</router-link>
+    <a class="q-mt-custom24 full-width text-center text-subtitle1 daily-tarot-back-today" @click="backToToday.setter">{{
       backToToday.text
     }}</a>
   </div>
@@ -145,17 +146,23 @@ const handleMonthYear = ({ instance, month, year }) => {
 :root {
   --dp-border-radius: 0;
   --dp-cell-border-radius: 50%;
-  --dp-marker-color: red;
   --dp-row-margin: 0px;
   --dp-month-year-row-button-size: 63px;
   --dp-cell-size: 48px;
-  --dp-font-family: 'Inter', serif;
+  // --dp-font-family: 'Inter', serif;
+}
+.daily-overview-wrap {
+  background:#CED4DA;
+}
+.dp__menu {
+  background:#ADB5BD;
+  border: 0;
 }
 .dp__calendar_header {
   gap: 4px;
 }
 .dp__calendar_header_item {
-  background: red;
+  background: #E9ECEF;
 }
 .dp__calendar_row {
   gap: 4px;
@@ -182,7 +189,6 @@ const handleMonthYear = ({ instance, month, year }) => {
 .dp__calendar_header_separator {
   display: none;
 }
-
 .daily-overview {
   width: 372px;
 }
@@ -193,5 +199,40 @@ const handleMonthYear = ({ instance, month, year }) => {
 }
 .slot-icon {
   width: 15.8px;
+}
+.daily-tarot {
+  background-color: #6e757c;
+}
+.daily-tarot-read-today {
+  background-color:white ;
+}
+.daily-tarot-back-today {
+  cursor: pointer;
+}
+.dp__inner_nav{
+  color: black;
+}
+.dp__marker_dot{
+  background: #D9D9D9;
+}
+.daily-overview-wrap{
+  background: red;
+  width: 100%;
+}
+.daily-tarot-name{
+  font-size: 24px;
+  color: white;
+}
+.daily-tarot-blessing-message{
+  font-size: 16px;
+  color: white;
+}
+.daily-overview {
+  :deep(.dp__main div) {
+  width: 100%;
+  }
+}
+.dp__month_year_wrap {
+  margin: 10px 0;
 }
 </style>
