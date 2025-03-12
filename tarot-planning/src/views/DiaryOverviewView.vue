@@ -90,61 +90,62 @@ const handleMonthYear = ({ instance, month, year }) => {
 }
 </script>
 <template>
-  <div class="daily-overview column full-width">
-    <VueDatePicker
-      class="full-width vue-date-picker"
-      v-model="selectedDate"
-      @update:model-value="handleDate"
-      :inline="{ input: false }"
-      auto-apply
-      :min-date="minDate"
-      :max-date="new Date()"
-      :enable-time-picker="false"
-      month-name-format="long"
-      locale="zh-Hant"
-      :action-row="{ showNow: true }"
-      :day-names="dateNames"
-      week-start="0"
-      :markers="markers"
-      disable-year-select
-      @update-month-year="handleMonthYear"
-    >
-      <template #arrow-left>
-        <img class="slot-icon" src="@/images/arrow-left.png" />
-        <span>{{ lastMonth }}月</span>
-      </template>
-      <template #arrow-right>
-        <span>{{ nextMonth }}月</span>
-        <img class="slot-icon" src="@/images/arrow-right.png" />
-      </template>
-    </VueDatePicker>
+  <div class="daily-overview-wrap q-mb-custom24 row justify-center">
+    <div class="daily-overview column">
+      <VueDatePicker
+        class="full-width vue-date-picker"
+        v-model="selectedDate"
+        @update:model-value="handleDate"
+        :inline="{ input: false }"
+        auto-apply
+        :min-date="minDate"
+        :max-date="new Date()"
+        :enable-time-picker="false"
+        month-name-format="long"
+        locale="zh-Hant"
+        :action-row="{ showNow: true }"
+        :day-names="dateNames"
+        week-start="0"
+        :markers="markers"
+        @update-month-year="handleMonthYear"
+      >
+        <template #arrow-left>
+          <img class="slot-icon" src="@/images/arrow-left.png" />
+          <span>{{ lastMonth }}月</span>
+        </template>
+        <template #arrow-right>
+          <span>{{ nextMonth }}月</span>
+          <img class="slot-icon" src="@/images/arrow-right.png" />
+        </template>
+      </VueDatePicker>
 
-    <div class="daily-tarot row q-pa-sm">
-      <div class="col-4 q-mx-auto row justify-center">
-        <div class="daily-tarot-img-box">
-          <img
-            class="full-width full-height"
-            :src="fakeDairyData[0].tarot_card.image"
-            :alt="fakeDairyData[0].tarot_card.name"
-          />
+      <div class="daily-tarot row q-pa-sm">
+        <div class="col-4 q-mx-auto row justify-center">
+          <div class="daily-tarot-img-box">
+            <img
+              class="full-width full-height"
+              :src="fakeDairyData[0].tarot_card.image"
+              :alt="fakeDairyData[0].tarot_card.name"
+            />
+          </div>
+        </div>
+        <div class="col-8">
+          <p class="daily-tarot-name">{{ fakeDairyData[0].tarot_card.name }}</p>
+          <span class="daily-tarot-blessing-message">
+            {{ fakeDairyData[0].tarot_card.blessing_message }}
+          </span>
         </div>
       </div>
-      <div class="col-8">
-        <p class="daily-tarot-name">{{ fakeDairyData[0].tarot_card.name }}</p>
-        <p class="daily-tarot-blessing-message">
-          {{ fakeDairyData[0].tarot_card.blessing_message }}
-        </p>
-      </div>
+
+      <router-link class="text-center text-subtitle1 daily-tarot-read-today" to="/member/diary-zone"
+        >閱讀今天日記</router-link
+      >
+      <a
+        class="q-mt-custom24 q-mb-custom24 full-width text-center text-subtitle1 daily-tarot-back-today"
+        @click="backToToday.setter"
+        >{{ backToToday.text }}</a
+      >
     </div>
-    <router-link
-      class="text-center text-subtitle1 daily-tarot-read-today"
-      to="/member/diary-zone"
-      >閱讀今天日記</router-link>
-    <a
-      class="q-mt-custom24 full-width text-center text-subtitle1 daily-tarot-back-today"
-      @click="backToToday.setter"
-      >{{ backToToday.text }}</a
-    >
   </div>
 </template>
 
@@ -175,6 +176,12 @@ const handleMonthYear = ({ instance, month, year }) => {
 .dp__calendar_row {
   gap: 4px;
 }
+.dp__month_year_wrap:nth-child(2) {
+  flex-direction: column-reverse;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
 .dp__month_year_wrap.dp__year_disable_select {
   justify-content: center;
   align-items: center;
@@ -186,8 +193,13 @@ const handleMonthYear = ({ instance, month, year }) => {
     flex-grow: 1;
   }
 }
+.dp__menu_inner {
+  padding: 0;
+}
 .dp__menu_inner .dp__calendar {
   font-size: $custom-h4;
+  background-color: #adb5bd;
+  padding: 8px;
 }
 .dp__calendar {
   display: flex;
@@ -236,11 +248,15 @@ const handleMonthYear = ({ instance, month, year }) => {
   color: white;
 }
 .daily-overview {
-  :deep(.dp__main div) {
+  .dp__main > div:nth-child(2) {
     width: 100%;
   }
 }
 .dp__month_year_wrap {
   margin: 10px 0;
+}
+.daily-overview-wrap {
+  width: 100vw;
+  background: #ced4da;
 }
 </style>
