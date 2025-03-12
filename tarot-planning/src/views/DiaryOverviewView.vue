@@ -3,6 +3,7 @@ import { onBeforeMount, reactive, ref } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
 import addDays from 'date-fns/addDays'
+import router from '@/router'
 // import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 
 onBeforeMount(() => {
@@ -135,11 +136,10 @@ const handleMonthYear = ({ instance, month, year }) => {
         </p>
       </div>
     </div>
-    <RouterLink
+    <router-link
       class="text-center text-subtitle1 daily-tarot-read-today"
-      :to="{ name: 'diary-zone' }"
-      >閱讀今天日記</RouterLink
-    >
+      to="/member/diary-zone"
+      >閱讀今天日記</router-link>
     <a
       class="q-mt-custom24 full-width text-center text-subtitle1 daily-tarot-back-today"
       @click="backToToday.setter"
