@@ -88,7 +88,7 @@ const handleMonthYear = ({ instance, month, year }) => {
   }
 }
 </script>
-<template >
+<template>
   <div class="daily-overview column full-width">
     <VueDatePicker
       class="full-width vue-date-picker"
@@ -125,18 +125,26 @@ const handleMonthYear = ({ instance, month, year }) => {
             class="full-width full-height"
             :src="fakeDairyData[0].tarot_card.image"
             :alt="fakeDairyData[0].tarot_card.name"
-            />
+          />
         </div>
       </div>
       <div class="col-8">
         <p class="daily-tarot-name">{{ fakeDairyData[0].tarot_card.name }}</p>
-        <p class="daily-tarot-blessing-message">{{ fakeDairyData[0].tarot_card.blessing_message }}</p>
+        <p class="daily-tarot-blessing-message">
+          {{ fakeDairyData[0].tarot_card.blessing_message }}
+        </p>
       </div>
     </div>
-    <router-link class="text-center text-subtitle1 daily-tarot-read-today" to="">閱讀今天日記</router-link>
-    <a class="q-mt-custom24 full-width text-center text-subtitle1 daily-tarot-back-today" @click="backToToday.setter">{{
-      backToToday.text
-    }}</a>
+    <RouterLink
+      class="text-center text-subtitle1 daily-tarot-read-today"
+      :to="{ name: 'diary-zone' }"
+      >閱讀今天日記</RouterLink
+    >
+    <a
+      class="q-mt-custom24 full-width text-center text-subtitle1 daily-tarot-back-today"
+      @click="backToToday.setter"
+      >{{ backToToday.text }}</a
+    >
   </div>
 </template>
 
@@ -152,17 +160,17 @@ const handleMonthYear = ({ instance, month, year }) => {
   // --dp-font-family: 'Inter', serif;
 }
 .daily-overview-wrap {
-  background:#CED4DA;
+  background: #ced4da;
 }
 .dp__menu {
-  background:#ADB5BD;
+  background: #adb5bd;
   border: 0;
 }
 .dp__calendar_header {
   gap: 4px;
 }
 .dp__calendar_header_item {
-  background: #E9ECEF;
+  background: #e9ecef;
 }
 .dp__calendar_row {
   gap: 4px;
@@ -204,32 +212,32 @@ const handleMonthYear = ({ instance, month, year }) => {
   background-color: #6e757c;
 }
 .daily-tarot-read-today {
-  background-color:white ;
+  background-color: white;
 }
 .daily-tarot-back-today {
   cursor: pointer;
 }
-.dp__inner_nav{
+.dp__inner_nav {
   color: black;
 }
-.dp__marker_dot{
-  background: #D9D9D9;
+.dp__marker_dot {
+  background: #d9d9d9;
 }
-.daily-overview-wrap{
+.daily-overview-wrap {
   background: red;
   width: 100%;
 }
-.daily-tarot-name{
+.daily-tarot-name {
   font-size: 24px;
   color: white;
 }
-.daily-tarot-blessing-message{
+.daily-tarot-blessing-message {
   font-size: 16px;
   color: white;
 }
 .daily-overview {
   :deep(.dp__main div) {
-  width: 100%;
+    width: 100%;
   }
 }
 .dp__month_year_wrap {
