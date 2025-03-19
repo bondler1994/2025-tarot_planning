@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import tarotAPI from '@/features/tarotDiaryAPI'
 import { useCardStore } from '@/stores/cardDataStore'
@@ -8,14 +8,25 @@ const cardData = ref({})
 const cardStore = useCardStore()
 
 const fetchCardData = async () => {
-  cardData.value = await tarotAPI.GET('/api/tarot-draw')
-  cardStore.setCardData(cardData.value.tarot_card)
+    cardData.value = JSON.parse(localStorage.getItem("cardData"))
+    const now = new Date()
+    if (!cardData.value || cardData.value.today !== now.toDateString()) {
+      cardData.value = await tarotAPI.GET('/api/tarot-draw')
+      cardData.value.tarot_card = { ...cardData.value.tarot_card, today: now.toDateString()}
+      console.log('今日首抽！', cardData.value.tarot_card)
+      localStorage.setItem("cardData", JSON.stringify(cardData.value.tarot_card))
+      cardStore.setCardData(cardData.value.tarot_card)
+    } else {
+      cardStore.setCardData(cardData.value)
+      console.log(`今天抽過了！將顯示今天(${cardData.value.today})的卡片`, cardData.value)
+    }
+
 }
 
 fetchCardData()
 
 const isUpRight = computed(() => {
-  return cardData.value.tarot_card?.is_upright ? '正位' : '逆位'
+  return cardStore.cardData.is_upright ? '正位' : '逆位'
 })
 
 const router = useRouter()
@@ -104,7 +115,7 @@ const getRevolutionRotateDeg = (index) => {
   }
 }
 
-let isExpanded = ref(0)
+const isExpanded = ref(0)
 
 const expandCards = () => {
   isExpanded.value = isExpanded.value + 1
@@ -172,7 +183,7 @@ const toCreateDiary = () => {
           @click="clickCard(card.id)"
         >
           <div class="card" :class="{ 'hover-effect': hoverTarget === index, flip: card.isFlip }">
-            <div class="front" :class="{ reversed: !cardData.tarot_card?.is_upright }"></div>
+            <div class="front" :class="{ reversed: !cardStore.cardData.is_upright }"></div>
             <div class="back"></div>
           </div>
         </div>
@@ -185,9 +196,9 @@ const toCreateDiary = () => {
       class="tarot-hint"
       :style="{ zIndex: hintShow ? '1' : '-1', opacity: hintShow && !opacityTransition ? '1' : '0', transition: opacityTransition ? 'opacity 1s ease' : '' }"
     >
-      <h4>{{ cardData.tarot_card?.name }} - {{ isUpRight }}</h4>
+      <h4>{{ cardStore.cardData.name }} - {{ isUpRight }}</h4>
       <div class="hint-card"></div>
-      <p>{{ cardData.tarot_card?.blessing_message }}</p>
+      <p>{{ cardStore.cardData.blessing_message }}</p>
       <q-btn @click="toCreateDiary" class="write-diary-btn">撰寫日記</q-btn>
     </div>
   </main>

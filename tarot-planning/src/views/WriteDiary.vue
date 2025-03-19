@@ -5,6 +5,9 @@ import { useCardStore } from '@/stores/cardDataStore'
 // import { nextTick } from 'vue'
 
 const cardStore = useCardStore()
+if (!cardStore.cardData.id) {
+  cardStore.setCardData(JSON.parse(localStorage.getItem("cardData")))
+}
 
 const isUpRight = computed(() => {
   return cardStore.cardData.is_upright ? '正位' : '逆位'
