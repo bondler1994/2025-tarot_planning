@@ -1,0 +1,1 @@
+import{al as s,r as t}from"./index-D93PXct4.js";const o=s("card",()=>{const a=t({id:null,name:"",is_upright:null,blessing_message:""});function e(r){a.value={...r}}return{cardData:a,setCardData:e}});export{o as u};
