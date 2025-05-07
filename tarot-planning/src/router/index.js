@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'first-visit', // 直接讓根路徑顯示 FirstVisit 頁面
+      name: 'home', // 直接讓根路徑顯示 FirstVisit 頁面
     },
     {
       path: '/first-visit',
@@ -29,7 +29,7 @@ const router = createRouter({
         },
         {
           path: 'register',
-          redirect: (to) => {
+          redirect: () => {
             return { name: 'register' }
           },
           children: [
