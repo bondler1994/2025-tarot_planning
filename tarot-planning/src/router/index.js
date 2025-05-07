@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/2025-tarot_planning/'),
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'first-visit', // 直接讓根路徑顯示 FirstVisit 頁面
     },
     {
       path: '/first-visit',
