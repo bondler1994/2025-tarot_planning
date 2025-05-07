@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home', // 直接讓根路徑顯示 FirstVisit 頁面
+      name: 'first-visit', // 直接讓根路徑顯示 FirstVisit 頁面
     },
     {
       path: '/first-visit',
