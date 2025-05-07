@@ -7,6 +7,7 @@ import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/2025-tarot_planning/', 
   plugins: [
     vue({
       template: { transformAssetUrls },
@@ -18,7 +19,6 @@ export default defineConfig({
       sassVariables: fileURLToPath(new URL('./src/quasar-variables.sass', import.meta.url)),
     }),
   ],
-  base: '',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
