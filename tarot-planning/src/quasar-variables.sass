@@ -8,3 +8,53 @@ $positive  : #21BA45
 $negative  : #C10015
 $info      : #31CCEC
 $warning   : #F2C037
+
+$grey-1    : #F8F9FA
+$grey-2    : #E9ECEF
+$grey-3    : #DEE2E6
+$grey-4    : #CED4DA
+$grey-5    : #ADB5BD
+$grey-6    : #6C757D
+$grey-7    : #495057
+$grey-8    : #343A40
+$grey-9    : #212529
+
+$yellow-1  : #FEFAEB
+$yellow-2  : #FEF5D8
+$yellow-3  : #FDF1C4
+$yellow-4  : #FDECB1
+$yellow-5  : #FAD689
+$yellow-6  : #D1B370
+$yellow-7  : #B3995B
+$yellow-8  : #907B45
+$yellow-9  : #6E5D30
+
+$blue-1    : #E5F2FA
+$blue-2    : #C2DEF4
+$blue-3    : #80BDEA
+$blue-4    : #3298DC
+$blue-5    : #005CAD
+$blue-6    : #004B90
+$blue-7    : #003B75
+$blue-8    : #002B5A
+$blue-9    : #001C3F
+
+$white     : #FFFFFF
+$black     : #000000
+
+@use "quasar/src/css/variables" as q
+@use "sass:map"
+
+// spacing
+$space-custom4: (x: 4px, y: 4px)
+$space-custom8: (x: 8px, y: 8px)
+$space-custom12: (x: 12px, y: 12px)
+$space-custom16: (x: 16px, y: 16px)
+$space-custom20: (x: 20px, y: 20px)
+$space-custom24: (x: 24px, y: 24px)
+$space-custom28: (x: 28px, y: 28px)
+$space-custom32: (x: 32px, y: 32px)
+
+$new-spaces:(custom4: $space-custom4, custom8: $space-custom8, custom12: $space-custom12,custom16: $space-custom16, custom20: $space-custom20, custom24: $space-custom24, custom28: $space-custom28,custom32: $space-custom32) 
+$spaces: map.merge(q.$spaces, $new-spaces)
+

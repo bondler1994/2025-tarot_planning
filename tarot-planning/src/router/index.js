@@ -1,21 +1,96 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/2025-tarot_planning/'),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'home', // 直接讓根路徑顯示 FirstVisit 頁面
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/first-visit',
+      name: 'first-visit',
+      component: () => import('../views/FirstVisit.vue'),
+    },
+    {
+      path: '/member',
+      name: 'member',
+      component: () => import('../views/MemberView.vue'),
+      children: [
+        {
+          path: 'login',
+          name: 'login',
+          component: () => import('../views/LoginView.vue'),
+        },
+        {
+          path: 'login',
+          name: 'forgetPassword',
+          component: () => import('../views/LoginView.vue'),
+        },
+        {
+          path: 'register',
+          redirect: () => {
+            return { name: 'register' }
+          },
+          children: [
+            {
+              path: '',
+              name: 'register',
+              component: () => import('../views/register/RegisterView.vue'),
+            },
+            {
+              path: 'confirmation',
+              name: 'registerConfirmation',
+              component: () => import('../views/register/ConfirmationView.vue'),
+            },
+            {
+              path: 'success',
+              name: 'registerSuccess',
+              component: () => import('../views/register/RegisterSuccessView.vue'),
+            },
+            {
+              path: 'google-update',
+              name: 'registerGoogleUpdate',
+              component: () => import('../views/register/RegisterGoogleUpdateView.vue'),
+            },
+          ],
+        },
+        {
+          path: '',
+          name: 'today-draw',
+          component: () => import('@/views/TodayDrawView.vue'),
+        },
+        {
+          path: 'diary-zone',
+          name: 'diary-zone',
+          component: () => import('@/views/DiaryZoneView.vue'),
+        },
+        {
+          path: 'diary/statistics',
+          name: 'statistics',
+          component: () => import('@/views/EasterEggView.vue'),
+        },
+        {
+          path: 'diary/overview',
+          name: 'overview',
+          component: () => import('../views/DiaryOverviewView.vue'),
+        },
+        {
+          path: 'profile',
+          name: 'memberProfile',
+          component: () => import('../views/ProfileView.vue'),
+        },
+      ],
+    },
+    {
+      path: '/draw',
+      name: 'Draw',
+      component: () => import('../views/Draw.vue'),
+    },
+    {
+      path: '/write-diary',
+      name: 'WriteDiary',
+      component: () => import('../views/WriteDiary.vue'),
     },
   ],
 })

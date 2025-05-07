@@ -1,0 +1,7 @@
+@mixin button {
+  border-radius: 24px;
+
+  &::before {
+    box-shadow: none;
+  }
+}
