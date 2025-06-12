@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "homepage": "https://bondler1994.github.io/2025-tarot_planning/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
