@@ -1,1 +1,0 @@
-import{aj as t,r as a}from"./index-CSCzfQmP.js";const i=t("profileStore",()=>{const e=a({email:"15t@example.com",name:"邱蓋",password:"Pass1234",gender:"other",birthdate:"1990-05-15"});function r(o){e.value={...e.value,...o}}return{profile:e,updateProfile:r}});export{i as u};
