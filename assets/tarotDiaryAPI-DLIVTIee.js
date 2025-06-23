@@ -1,0 +1,1 @@
+import{a as o}from"./index-DW_MHI2K.js";const r="https://api-tarotdiary.codeteches.com/",s=o.create({baseURL:`${r}`,headers:{Accept:"application/json","Content-Type":"application/json"}}),c={async GET(t){return(await s.get(t)).data},async POST(t,a){return(await s.post(t,a)).data},async PUT(t,a){return(await s.put(t,a)).data}};export{c as t};
