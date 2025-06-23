@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://virtserver.swaggerhub.com/fufu/PublicTarotDiaryAPI/1.0.0'
+const API_URL = 'https://api-tarotdiary.codeteches.com/'
 
 const apiClient = axios.create({
   baseURL: `${API_URL}`,

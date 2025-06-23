@@ -21,7 +21,7 @@ const memberData = ref({
   email: '',
   password: '',
   gender: '',
-  birthdate: '',
+  birth_date: '',
 })
 
 const passwordConfirm = ref('')
@@ -44,10 +44,10 @@ const genderOptions = ref([
 
 const birthdate = computed({
   get() {
-    return memberData.value.birthdate.split('-').join('/')
+    return memberData.value.birth_date.split('-').join('/')
   },
   set(date) {
-    memberData.value.birthdate = date.split('/').join('-')
+    memberData.value.birth_date = date.split('/').join('-')
   },
 })
 

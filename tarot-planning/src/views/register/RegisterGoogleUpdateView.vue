@@ -11,7 +11,7 @@ const router = useRouter()
 const googleUpdateData = ref({
   name: '我是菇狗', // 要改成從google來的名稱
   gender: '',
-  birthdate: '',
+  birth_date: '',
 })
 
 const isDisable = ref({
@@ -35,10 +35,10 @@ const genderOptions = ref([
 
 const birthdate = computed({
   get() {
-    return googleUpdateData.value.birthdate.split('-').join('/')
+    return googleUpdateData.value.birth_date.split('-').join('/')
   },
   set(date) {
-    googleUpdateData.value.birthdate = date.split('/').join('-')
+    googleUpdateData.value.birth_date = date.split('/').join('-')
   },
 })
 

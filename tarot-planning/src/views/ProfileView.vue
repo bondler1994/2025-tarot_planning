@@ -19,7 +19,7 @@ const newProfileData = ref({
   name: profileStore.profile.name,
   password: profileStore.profile.password,
   gender: profileStore.profile.gender,
-  birthdate: profileStore.profile.birthdate,
+  birth_date: profileStore.profile.birth_date,
 })
 
 const passwordConfirm = ref('')
@@ -49,10 +49,10 @@ const genderOptions = ref([
 
 const birthdate = computed({
   get() {
-    return newProfileData.value.birthdate.split('-').join('/')
+    return newProfileData.value.birth_date.split('-').join('/')
   },
   set(date) {
-    newProfileData.value.birthdate = date.split('/').join('-')
+    newProfileData.value.birth_date = date.split('/').join('-')
   },
 })
 
@@ -104,7 +104,7 @@ function onCancel() {
     name: profileStore.profile.name,
     password: profileStore.profile.password,
     gender: profileStore.profile.gender,
-    birthdate: profileStore.profile.birthdate,
+    birth_date: profileStore.profile.birth_date,
   }
 
   isDisable.value = {

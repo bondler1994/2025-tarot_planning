@@ -8,7 +8,7 @@ export const useProfileStore = defineStore('profileStore', () => {
     name: '邱蓋',
     password: 'Pass1234',
     gender: 'other',
-    birthdate: '1990-05-15',
+    birth_date: '1990-05-15',
   })
 
   function updateProfile(data) {

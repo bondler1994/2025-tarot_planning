@@ -9,11 +9,6 @@ const router = createRouter({
       // component: () => import('@/views/FirstVisit.vue'),
       component: FirstVisit,
     },
-    // {
-    //   path: '/first-visit',
-    //   name: 'first-visit',
-    //   component: () => import('@/views/FirstVisit.vue'),
-    // },
     {
       path: '/member',
       name: 'member',
