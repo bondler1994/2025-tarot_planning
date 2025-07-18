@@ -1,21 +1,30 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import tarotAPI from '@/features/tarotDiaryAPI'
+
 import { useCardStore } from '@/stores/cardDataStore'
 
 const cardData = ref({})
 const cardStore = useCardStore()
 
 const fetchCardData = async () => {
-  cardData.value = await tarotAPI.GET('/api/tarot-draw')
-  cardStore.setCardData(cardData.value.tarot_card)
+  cardData.value = JSON.parse(localStorage.getItem('cardData'))
+  const now = new Date()
+  if (!cardData.value || cardData.value.today !== now.toDateString()) {
+    await cardStore.fetchCardDate()
+    cardData.value = { ...cardStore.cardData, today: now.toDateString() }
+    console.log('今日首抽！', cardStore.cardData)
+    localStorage.setItem('cardData', JSON.stringify(cardData.value))
+  } else {
+    // cardStore.setCardData(cardData.value)
+    console.log(`今天抽過了！將顯示今天(${cardData.value.today})的卡片`, cardData.value)
+  }
 }
 
 fetchCardData()
 
 const isUpRight = computed(() => {
-  return cardData.value.tarot_card?.is_upright ? '正位' : '逆位'
+  return cardData.value?.is_upright ? '正位' : '逆位'
 })
 
 const router = useRouter()
@@ -74,13 +83,19 @@ const clickCard = async (id) => {
   hoverTarget.value = null
 
   setTimeout(() => {
-      hintShow.value = true
+    hintShow.value = true
   }, 3000)
 }
 
 onMounted(() => {
   for (let i = 0; i < totalCards; i++) {
     cards.value.push({ id: i, isFlip: false, isChosen: false })
+  }
+
+  const now = new Date()
+
+  if (cardData.value || cardData.value?.today === now.toDateString()) {
+    hintShow.value = true
   }
 })
 
@@ -104,7 +119,7 @@ const getRevolutionRotateDeg = (index) => {
   }
 }
 
-let isExpanded = ref(0)
+const isExpanded = ref(0)
 
 const expandCards = () => {
   isExpanded.value = isExpanded.value + 1
@@ -124,7 +139,6 @@ const getTransition = (index) => {
     return `transform ${(time / count) * index}s ease-out, scale 1s linear, translate 1s linear, opacity 0.5s linear`
   }
 }
-
 
 const opacityTransition = ref(false)
 const toCreateDiary = () => {
@@ -172,8 +186,12 @@ const toCreateDiary = () => {
           @click="clickCard(card.id)"
         >
           <div class="card" :class="{ 'hover-effect': hoverTarget === index, flip: card.isFlip }">
-            <div class="front" :class="{ reversed: !cardData.tarot_card?.is_upright }"></div>
-            <div class="back"></div>
+            <div class="front" :class="{ reversed: !cardData?.is_upright }">
+              <img :src="cardData?.image" alt="" />
+            </div>
+            <div class="back">
+              <!-- <img :src="cardData.image" alt="" /> -->
+            </div>
           </div>
         </div>
       </div>
@@ -183,11 +201,17 @@ const toCreateDiary = () => {
     </h3>
     <div
       class="tarot-hint"
-      :style="{ zIndex: hintShow ? '1' : '-1', opacity: hintShow && !opacityTransition ? '1' : '0', transition: opacityTransition ? 'opacity 1s ease' : '' }"
+      :style="{
+        zIndex: hintShow ? '1' : '-1',
+        opacity: hintShow && !opacityTransition ? '1' : '0',
+        transition: opacityTransition ? 'opacity 1s ease' : '',
+      }"
     >
-      <h4>{{ cardData.tarot_card?.name }} - {{ isUpRight }}</h4>
-      <div class="hint-card"></div>
-      <p>{{ cardData.tarot_card?.blessing_message }}</p>
+      <h4>{{ cardData?.name }} - {{ isUpRight }}</h4>
+      <div class="hint-card" :class="{ reversed: !cardData?.is_upright }">
+        <img :src="cardData?.image" alt="" />
+      </div>
+      <p>{{ cardData?.message }}</p>
       <q-btn @click="toCreateDiary" class="write-diary-btn">撰寫日記</q-btn>
     </div>
   </main>
@@ -198,6 +222,9 @@ const toCreateDiary = () => {
 @use '@/assets/sass/font.scss' as *;
 @use '@/assets/sass/button.scss' as *;
 
+main {
+  background-color: $blue-2;
+}
 .screen {
   width: 100%;
   height: 100%;
@@ -248,14 +275,18 @@ const toCreateDiary = () => {
   background-repeat: no-repeat;
   position: absolute;
   backface-visibility: hidden;
+
+  img {
+    width: 100%;
+  }
 }
 .front {
-  background-image: url(/front.png); //todo: 到時候換成API圖片網址
+  // background-image: url(/front.png); //todo: 到時候換成API圖片網址
   transform: rotateY(180deg);
 }
 
-.front.reversed {
-  background-image: url(/front.png); //todo: 到時候換成API圖片網址
+.reversed {
+  // background-image: url(/front.png); //todo: 到時候換成API圖片網址
   transform: rotateY(180deg) rotateZ(180deg);
 }
 
@@ -324,14 +355,20 @@ const toCreateDiary = () => {
   transform: rotate(0deg) translate(-50%, -50%) scale(2.5);
   z-index: 1;
 
-  transition: translate 1s, transform 1s 0.5s;
+  transition:
+    translate 1s,
+    transform 1s 0.5s;
 }
 
 .hint-card {
   width: 64px;
-  height: 128px;
-  background-image: url(/front.png);
+  // height: 128px;
+  // background-image: url(/front.png);
   background-size: cover;
+
+  img {
+    width: 100%;
+  }
 }
 
 .tarot-hint {
