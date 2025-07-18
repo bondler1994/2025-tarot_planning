@@ -1,17 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import tarotAPI from '@/features/tarotDiaryAPI'
 
 export const useCardStore = defineStore('card', () => {
-  const cardData = ref({
-    id: null,
-    name: '',
-    is_upright: null,
-    blessing_message: '',
-  })
+  const cardData = ref({})
 
-  function setCardData(data) {
-    cardData.value = { ...data }
+  async function fetchCardDate() {
+    const res = await tarotAPI.GET('/api/tarot/draw')
+    console.log(res)
+    cardData.value = res.data
   }
 
-  return { cardData, setCardData }
+  return { cardData, fetchCardDate }
 })

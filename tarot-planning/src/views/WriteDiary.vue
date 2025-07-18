@@ -5,12 +5,13 @@ import { useCardStore } from '@/stores/cardDataStore'
 // import { nextTick } from 'vue'
 
 const cardStore = useCardStore()
+const cardData = ref({})
 if (!cardStore.cardData.id) {
-  cardStore.setCardData(JSON.parse(localStorage.getItem("cardData")))
+  cardData.value = JSON.parse(localStorage.getItem('cardData'))
 }
 
 const isUpRight = computed(() => {
-  return cardStore.cardData.is_upright ? '正位' : '逆位'
+  return cardData.value.is_upright ? '正位' : '逆位'
 })
 
 const text = ref('')
@@ -74,13 +75,13 @@ const captureScreenshot = async () => {
     <main>
       <div class="diary-block">
         <div class="card">
-          <div class="card__img" :class="cardStore.cardData.is_upright ? '' : 'reversed'">
-            <img src="/front.png" alt="" />
+          <div class="card__img" :class="cardData.is_upright ? '' : 'reversed'">
+            <img :src="cardData.image" alt="" />
             <!-- todo: 到時候換成API圖片網址 -->
           </div>
           <div class="card__info info">
-            <h4 class="info__title">{{ cardStore.cardData.name }} - {{ isUpRight }}</h4>
-            <p class="info__content">{{ cardStore.cardData.blessing_message }}</p>
+            <h4 class="info__title">{{ cardData.name }} - {{ isUpRight }}</h4>
+            <p class="info__content">{{ cardData.message }}</p>
           </div>
         </div>
         <div class="diary">
@@ -163,6 +164,7 @@ main {
 
   &__img {
     flex: 0 1 64px;
+    margin: auto;
 
     &.reversed {
       transform: rotate(180deg);
