@@ -1,27 +1,21 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-
 import { useCardStore } from '@/stores/cardDataStore'
 
-const cardData = ref({})
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js'
+import timezone from 'dayjs/plugin/timezone.js'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+const now = dayjs().tz('Asia/Taipei')
+
 const cardStore = useCardStore()
 
-const fetchCardData = async () => {
-  cardData.value = JSON.parse(localStorage.getItem('cardData'))
-  const now = new Date()
-  if (!cardData.value || cardData.value.today !== now.toDateString()) {
-    await cardStore.fetchCardDate()
-    cardData.value = { ...cardStore.cardData, today: now.toDateString() }
-    console.log('今日首抽！', cardStore.cardData)
-    localStorage.setItem('cardData', JSON.stringify(cardData.value))
-  } else {
-    // cardStore.setCardData(cardData.value)
-    console.log(`今天抽過了！將顯示今天(${cardData.value.today})的卡片`, cardData.value)
-  }
-}
-
-fetchCardData()
+const cardData = ref({})
+cardData.value = JSON.parse(localStorage.getItem('cardData'))
 
 const isUpRight = computed(() => {
   return cardData.value?.is_upright ? '正位' : '逆位'
@@ -31,33 +25,33 @@ const router = useRouter()
 
 const totalCards = 78
 const cards = ref([])
+for (let i = 0; i < totalCards; i++) {
+  cards.value.push({ id: i, isFlip: false, isChosen: false })
+}
 
 const isDisabled = (isFlip) => {
   return isFlip ? 'none' : ''
 }
 
-let hintShow = ref(false)
+const hintShow = ref(false)
 
+//拖曳時選取卡牌（唯獨行動裝置時觸發，使用touch）
 let isDown = false
 let startX
 let scrollLeft
 let isDragging = false
-
 const handleMouseDown = (e) => {
   isDown = true
   startX = e.pageX - e.currentTarget.offsetLeft
   scrollLeft = e.currentTarget.scrollLeft
 }
-
 const handleMouseUp = () => {
   isDown = false
   setTimeout(() => {
     isDragging = false
   }, 50)
 }
-
 const hoverTarget = ref(null)
-
 const scroll = (e) => {
   if (!isDown) return
   isDragging = true
@@ -72,6 +66,7 @@ const scroll = (e) => {
   }
 }
 
+//控制只能選一張牌
 const isChosen = ref(false)
 const clickCard = async (id) => {
   if (isDragging) return
@@ -87,18 +82,7 @@ const clickCard = async (id) => {
   }, 3000)
 }
 
-onMounted(() => {
-  for (let i = 0; i < totalCards; i++) {
-    cards.value.push({ id: i, isFlip: false, isChosen: false })
-  }
-
-  const now = new Date()
-
-  if (cardData.value || cardData.value?.today === now.toDateString()) {
-    hintShow.value = true
-  }
-})
-
+//計算每張卡牌旋轉角度
 const getRevolutionRotateDeg = (index) => {
   // const startDeg = 45
   // const endDeg = 135
@@ -119,8 +103,8 @@ const getRevolutionRotateDeg = (index) => {
   }
 }
 
+//點擊後依序播放動畫
 const isExpanded = ref(0)
-
 const expandCards = () => {
   isExpanded.value = isExpanded.value + 1
   setTimeout(() => {
@@ -132,6 +116,7 @@ const expandCards = () => {
   }, 2500)
 }
 
+//定義每張牌旋轉的速度不同，製造牌攤開的動畫效果
 const getTransition = (index) => {
   const count = 78
   const time = 1.5
@@ -140,6 +125,7 @@ const getTransition = (index) => {
   }
 }
 
+//點擊撰寫日記後，元素漸漸淡出
 const opacityTransition = ref(false)
 const toCreateDiary = () => {
   opacityTransition.value = true
@@ -147,6 +133,19 @@ const toCreateDiary = () => {
     router.push({ name: 'WriteDiary' })
   }, 2000)
 }
+
+const fetchCardData = async () => {
+  if (!cardData.value || !dayjs(cardData.value.today).isSame(now, 'd')) {
+    await cardStore.fetchCardData()
+    cardData.value = cardStore.cardData
+    localStorage.setItem('cardData', JSON.stringify(cardData.value))
+  } else {
+    //直接 show 牌面
+    hintShow.value = true
+  }
+}
+
+fetchCardData()
 </script>
 
 <template>
@@ -179,7 +178,7 @@ const toCreateDiary = () => {
             show: card.isFlip,
           }"
           :style="{
-            pointerEvents: isDisabled(isChosen),
+            pointerEvents: isDisabled(cards.some((card) => card.isChosen)),
             transform: isExpanded >= 2 && !card.isFlip ? getRevolutionRotateDeg(index) : '',
             transition: card.isFlip ? '' : getTransition(index),
           }"
@@ -190,7 +189,7 @@ const toCreateDiary = () => {
               <img :src="cardData?.image" alt="" />
             </div>
             <div class="back">
-              <!-- <img :src="cardData.image" alt="" /> -->
+              <img src="/2025-tarot_planning/back.png" alt="" />
             </div>
           </div>
         </div>
@@ -215,7 +214,6 @@ const toCreateDiary = () => {
       <q-btn @click="toCreateDiary" class="write-diary-btn">撰寫日記</q-btn>
     </div>
   </main>
-  <!-- <pre>{{ cardData }}</pre> -->
 </template>
 
 <style scoped lang="scss">
@@ -281,17 +279,11 @@ main {
   }
 }
 .front {
-  // background-image: url(/front.png); //todo: 到時候換成API圖片網址
   transform: rotateY(180deg);
 }
 
 .reversed {
-  // background-image: url(/front.png); //todo: 到時候換成API圖片網址
   transform: rotateY(180deg) rotateZ(180deg);
-}
-
-.back {
-  background-image: url(/back.png); //todo: 到時候換成API圖片網址
 }
 
 .card-container:hover .card:not(.flip) {
