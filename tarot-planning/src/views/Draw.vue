@@ -14,8 +14,7 @@ const now = dayjs().tz('Asia/Taipei')
 
 const cardStore = useCardStore()
 
-const cardData = ref({})
-cardData.value = JSON.parse(localStorage.getItem('cardData'))
+const cardData = ref(JSON.parse(localStorage.getItem('cardData') || 'null'))
 
 const isUpRight = computed(() => {
   return cardData.value?.is_upright ? '正位' : '逆位'
@@ -24,10 +23,13 @@ const isUpRight = computed(() => {
 const router = useRouter()
 
 const totalCards = 78
-const cards = ref([])
-for (let i = 0; i < totalCards; i++) {
-  cards.value.push({ id: i, isFlip: false, isChosen: false })
-}
+const cards = ref(
+  Array(totalCards)
+    .fill(null)
+    .map((e, i) => {
+      return { id: i, isFlip: false, isChosen: false }
+    }),
+)
 
 const isDisabled = (isFlip) => {
   return isFlip ? 'none' : ''
