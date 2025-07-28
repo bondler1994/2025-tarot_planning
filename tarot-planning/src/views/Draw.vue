@@ -197,7 +197,7 @@ fetchCardData()
         </div>
       </div>
     </div>
-    <h3 class="draw-hint" :class="{ 'card-hide': hintShow }">
+    <h3 class="draw-hint" :class="{ 'draw-hint-hide': cards.some((card) => card.isChosen) }">
       請<br />點<br />擊<br />抽<br />牌<br />！
     </h3>
     <div
@@ -317,7 +317,6 @@ main {
   bottom: 0;
   right: 57px;
   margin: auto;
-  z-index: -1;
 }
 
 //step1 為停留在畫面中間
@@ -410,5 +409,10 @@ main {
 .card-hide {
   opacity: 0;
   transition: opacity 1s 0.5s ease;
+}
+
+.draw-hint-hide {
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 </style>
