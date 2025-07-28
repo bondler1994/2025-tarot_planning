@@ -4,6 +4,11 @@ import { useRouter } from 'vue-router'
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBox from '@/components/InputBox.vue'
 import BtnGoogleLogin from '@/components/BtnGoogleLogin.vue'
+import { useProfileStore } from '../stores/profileStore'
+import { useAuthStore } from '@/stores/authStore'
+
+const profileStore = useProfileStore()
+const authStore = useAuthStore()
 
 const router = useRouter()
 
@@ -42,7 +47,9 @@ async function onSubmit() {
 
   try {
     const res = await tarotDiaryAPI.POST('/api/auth/login', payload)
-    console.log(res)
+    authStore.setToken(res.token)
+    const profile = await tarotDiaryAPI.GET('/api/user/me')
+    profileStore.updateProfile(profile.data)
 
     router.push({ name: 'today-draw' })
   } catch (error) {
