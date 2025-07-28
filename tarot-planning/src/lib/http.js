@@ -14,10 +14,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     const authStore = useAuthStore()
-
-    console.log('準備檢查token')
     await authStore.refreshIfNeeded()
-    console.log('到這應該就是更新完了')
     if (authStore.token) {
       config.headers.Authorization = `Bearer ${authStore.token}`
     }
