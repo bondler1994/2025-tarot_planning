@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import FirstVisit from '@/views/FirstVisit.vue'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,26 +56,31 @@ const router = createRouter({
         {
           path: '',
           name: 'today-draw',
+          meta: { requiresAuth: true },
           component: () => import('@/views/TodayDrawView.vue'),
         },
         {
           path: 'diary-zone',
           name: 'diary-zone',
+          meta: { requiresAuth: true },
           component: () => import('@/views/DiaryZoneView.vue'),
         },
         {
           path: 'diary/statistics',
           name: 'statistics',
+          meta: { requiresAuth: true },
           component: () => import('@/views/EasterEggView.vue'),
         },
         {
           path: 'diary/overview',
           name: 'overview',
+          meta: { requiresAuth: true },
           component: () => import('@/views/DiaryOverviewView.vue'),
         },
         {
           path: 'profile',
           name: 'memberProfile',
+          meta: { requiresAuth: true },
           component: () => import('@/views/ProfileView.vue'),
         },
       ],
@@ -90,6 +96,16 @@ const router = createRouter({
       component: () => import('@/views/WriteDiary.vue'),
     },
   ],
+})
+
+router.beforeEach(async (to) => {
+  const auth = useAuthStore()
+  if (to.meta.requiresAuth) {
+    await auth.refreshIfNeeded()
+    if (!auth.isAuthenticated) {
+      return { name: 'login' }
+    }
+  }
 })
 
 export default router
