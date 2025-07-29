@@ -197,7 +197,7 @@ fetchCardData()
         </div>
       </div>
     </div>
-    <h3 class="draw-hint" :class="{ 'draw-hint-hide': cards.some((card) => card.isChosen) }">
+    <h3 class="draw-hint" :class="{ 'draw-hint-hide': hintShow }">
       請<br />點<br />擊<br />抽<br />牌<br />！
     </h3>
     <div
