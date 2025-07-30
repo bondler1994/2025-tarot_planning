@@ -35,7 +35,6 @@ function goRegisterPage() {
         <div class="card">
           <div class="card__img" :class="cardData.is_upright ? '' : 'reversed'">
             <img :src="cardData.image" alt="" />
-            <!-- todo: 到時候換成API圖片網址 -->
           </div>
           <div class="card__info info">
             <h4 class="info__title">{{ cardData.name }} - {{ isUpRight }}</h4>
@@ -44,9 +43,7 @@ function goRegisterPage() {
         </div>
         <div class="diary">
           <div class="q-pa-md">
-            <p v-if="isCapturing" class="fake-content">{{ text ? text : '以下空白' }}</p>
             <q-input
-              v-else
               class="textarea"
               type="textarea"
               input-class="my-textarea"
