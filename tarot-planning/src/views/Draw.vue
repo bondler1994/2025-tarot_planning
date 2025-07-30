@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCardStore } from '@/stores/cardDataStore'
+import { useAuthStore } from '@/stores/authStore'
 
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
@@ -127,12 +128,19 @@ const getTransition = (index) => {
   }
 }
 
+const authStore = useAuthStore()
 //點擊撰寫日記後，元素漸漸淡出
 const opacityTransition = ref(false)
 const toCreateDiary = () => {
   opacityTransition.value = true
   setTimeout(() => {
-    router.push({ name: 'WriteDiary' })
+    if (authStore.token && authStore.isAuthenticated) {
+      router.push({ name: 'diary-zone' })
+    } else if (authStore.token && !authStore.isAuthenticated) {
+      router.push({ name: 'login' })
+    } else {
+      router.push({ name: 'WriteDiary' })
+    }
   }, 2000)
 }
 
