@@ -203,12 +203,17 @@ const captureScreenshot = async () => {
           <img
             v-if="!isEditing"
             @click="captureScreenshot"
-            src="/shareButton.png"
+            src="/2025-tarot_planning/shareButton.png"
             alt="shareButton"
           />
         </div>
         <div class="icon__footer">
-          <img v-if="!isEditing" @click="startEditing" src="/pen.png" alt="pen" />
+          <img
+            v-if="!isEditing"
+            @click="startEditing"
+            src="/2025-tarot_planning/pen.png"
+            alt="pen"
+          />
         </div>
         <div v-if="isEditing" class="edit-actions">
           <q-btn label="取消" unelevated rounded @click="cancelEditing" color="grey" />

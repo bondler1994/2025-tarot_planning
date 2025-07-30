@@ -5,7 +5,7 @@ const emits = defineEmits(['update:disable'])
 <template>
   <q-icon
     class="edit-btn"
-    name="img:/pencil.svg"
+    name="img:/2025-tarot_planning/pencil.svg"
     size="24px"
     color="black"
     @click="emits('update:disable', false)"
