@@ -19,6 +19,7 @@ const router = createRouter({
           path: 'login',
           name: 'login',
           component: () => import('@/views/LoginView.vue'),
+          meta: { guestOnly: true },
         },
         {
           path: 'login',
@@ -98,14 +99,24 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to) => {
-  const auth = useAuthStore()
-  if (to.meta.requiresAuth) {
-    await auth.refreshIfNeeded()
-    if (!auth.isAuthenticated) {
-      return { name: 'login' }
-    }
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+
+  try {
+    await authStore.refreshIfNeeded()
+  } catch (e) {
+    await authStore.logout()
   }
+
+  if (to.meta.guestOnly && authStore.isAuthenticated) {
+    return next({ name: 'today-draw' })
+  }
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return next({ name: 'login' })
+  }
+
+  next()
 })
 
 export default router
