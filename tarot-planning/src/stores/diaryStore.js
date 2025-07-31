@@ -8,7 +8,7 @@ import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 dayjs.extend(utc) // timezone 依賴 utc，順序不能反
 dayjs.extend(timezone)
 
-export const useDraftDiaryStore = defineStore('diary', () => {
+export const useDiaryStore = defineStore('diary', () => {
   const draftDiary = ref(JSON.parse(localStorage.getItem('draftDiary') || 'null'))
   const diaries = ref([])
   const todayDiary = ref({})
