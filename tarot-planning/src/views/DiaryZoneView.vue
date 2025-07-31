@@ -357,14 +357,18 @@ const captureScreenshot = async () => {
   display: flex;
   gap: 24px;
   &__header {
-    background-image: url('/front.png');
-    background-size: 100% 100%; /* 讓圖片填滿 div，可能會裁切 */
-    background-position: center; /* 置中顯示 */
-    background-repeat: no-repeat; /* 不重複 */
-    background-color: white;
+    // background-image: url('/front.png');
+    // background-size: 100% 100%; /* 讓圖片填滿 div，可能會裁切 */
+    // background-position: center; /* 置中顯示 */
+    // background-repeat: no-repeat; /* 不重複 */
+    // background-color: white;
+
     min-width: 64px;
     width: 64px;
-    height: 128px;
+
+    img{
+      width: 100%;
+    }
   }
   &__body {
     height: 128px;
