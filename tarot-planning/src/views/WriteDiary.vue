@@ -23,7 +23,7 @@ const diaryStore = useDiaryStore()
 const router = useRouter()
 
 function goRegisterPage() {
-  diaryStore.setDiaryInfo({ ...cardData.value, diaryContent: text.value })
+  diaryStore.setDiaryInfo({ ...cardData.value, user_entry_text: text.value })
   router.push({ name: 'register' })
 }
 </script>
