@@ -2,6 +2,9 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
 import axios from 'axios'
+import { useDiaryStore } from '@/stores/diaryStore'
+
+const diaryStore = useDiaryStore()
 
 // import api from '@/features/tarotDiaryAPI.js'
 
@@ -28,17 +31,19 @@ const todayString = computed(() => {
 })
 
 // 提供給解析用的fn，目前內容為假資料。因為沒有 id，所以用擷取日期得方式偵測最新得卡牌內容
-const interpretations = ref([])
+const interpretation = ref(null)
 
 // 透過此段獲取API內容
 const fetchInterpretation = async () => {
   try {
-    const response = await axios.get(
-      'https://my-json-server.typicode.com/bondler1994/2024-Web-Camp---JStest/db',
-    )
-    interpretations.value = await response.data.entries.filter(
-      (entry) => entry.created_at === '2024-03-07',
-    )
+    // const response = await axios.get(
+    //   'https://my-json-server.typicode.com/bondler1994/2024-Web-Camp---JStest/db',
+    // )
+    // interpretations.value = await response.data.entries.filter(
+    //   (entry) => entry.created_at === '2024-03-07',
+    // )
+    await diaryStore.getDiary()
+    interpretation.value = diaryStore.todayDiary
 
     // interpretations.value = await response.data.entries.filter((entry) => {
     //   console.log('test', todayString.value[0])
@@ -59,7 +64,7 @@ onMounted(async () => {
 
 //當api來時 判斷api內容之一得isUpright 如果是就正 如果不是就逆
 const isUpright = computed(() => {
-  return interpretations.value[0].tarot_card.is_upright === 'true' ? '正位' : '逆位'
+  return interpretation.value?.tarot_card.is_upright === 1 ? '正位' : '逆位'
 })
 
 // 編輯日誌專用
@@ -68,18 +73,18 @@ const tempEdtingLog = ref('')
 
 const startEditing = () => {
   isEditing.value = true
-  return tempEdtingLog.value === interpretations.value[0].user_entry_text
+  return tempEdtingLog.value === interpretation.value.user_entry_text
 }
 
 const cancelEditing = () => {
   isEditing.value = false
-  return tempEdtingLog.value === interpretations.value[0].user_entry_text
+  return tempEdtingLog.value === interpretation.value.user_entry_text
 }
 
 const saveEditing = async () => {
   try {
     // cosnt response = await api.GET('null')
-    interpretations.value[0].user_entry_text = tempEdtingLog.value
+    interpretation.value.user_entry_text = tempEdtingLog.value
     isEditing.value = false
     //儲存後跳通知
 
@@ -160,18 +165,16 @@ const captureScreenshot = async () => {
     <div class="body diary">
       <!-- body -->
       <div class="diary__body log">
-        <div class="log__header card">
-          <div class="card__header"></div>
+        <div class="log__header card" v-if="interpretation?.tarot_card">
+          <div class="card__header"><img :src="interpretation?.tarot_card.image" alt=""></div>
           <div
             class="card__body interpretation"
-            v-for="(interpretation, index) in interpretations"
-            :key="interpretation.id || index"
           >
             <span class="interpretation__title">{{
-              `${interpretation.tarot_card.name} - ${isUpright}`
+              `${interpretation?.tarot_card.name} - ${isUpright}`
             }}</span>
             <div class="interpretation__body">
-              {{ interpretation.tarot_card.blessing_message }}
+              {{ interpretation?.tarot_card.blessing_message }}
             </div>
           </div>
         </div>
@@ -193,7 +196,7 @@ const captureScreenshot = async () => {
             placeholder="輸入今日心情"
             :dense="true"
           />
-          <p v-else class="log__text">{{ interpretations[0]?.user_entry_text }}</p>
+          <p v-else class="log__text">{{ interpretation?.user_entry_text }}</p>
         </div>
       </div>
       <!-- footer -->
@@ -354,14 +357,18 @@ const captureScreenshot = async () => {
   display: flex;
   gap: 24px;
   &__header {
-    background-image: url('/front.png');
-    background-size: 100% 100%; /* 讓圖片填滿 div，可能會裁切 */
-    background-position: center; /* 置中顯示 */
-    background-repeat: no-repeat; /* 不重複 */
-    background-color: white;
+    // background-image: url('/front.png');
+    // background-size: 100% 100%; /* 讓圖片填滿 div，可能會裁切 */
+    // background-position: center; /* 置中顯示 */
+    // background-repeat: no-repeat; /* 不重複 */
+    // background-color: white;
+
     min-width: 64px;
     width: 64px;
-    height: 128px;
+
+    img{
+      width: 100%;
+    }
   }
   &__body {
     height: 128px;
