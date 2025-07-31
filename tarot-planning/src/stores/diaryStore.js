@@ -9,7 +9,7 @@ dayjs.extend(utc) // timezone 依賴 utc，順序不能反
 dayjs.extend(timezone)
 
 export const useDraftDiaryStore = defineStore('diary', () => {
-  const draftDiary = ref(JSON.parse(localStorage.getItem('diaryInfo') || 'null'))
+  const draftDiary = ref(JSON.parse(localStorage.getItem('draftDiary') || 'null'))
   const diaries = ref([])
   const todayDiary = ref({})
 
@@ -23,12 +23,12 @@ export const useDraftDiaryStore = defineStore('diary', () => {
 
   function setDiaryInfo(data) {
     draftDiary.value = { ...data }
-    localStorage.setItem('diaryInfo', JSON.stringify(data))
+    localStorage.setItem('draftDiary', JSON.stringify(data))
   }
 
   function clearDiary() {
     draftDiary.value = null
-    localStorage.removeItem('diaryInfo')
+    localStorage.removeItem('draftDiary')
   }
 
   async function getDiary() {
@@ -39,5 +39,5 @@ export const useDraftDiaryStore = defineStore('diary', () => {
     todayDiary.value = res.data
   }
 
-  return { diaryInfo: draftDiary, isDiaryValid, setDiaryInfo, clearDiary, getDiary, todayDiary }
+  return { draftDiary, isDiaryValid, setDiaryInfo, clearDiary, getDiary, todayDiary }
 })

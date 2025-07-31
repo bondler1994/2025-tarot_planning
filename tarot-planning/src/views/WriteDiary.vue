@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 // import { useCardStore } from '@/stores/cardDataStore'
-import { useDraftDiaryStore } from '@/stores/draftDiaryStore'
+import { useDiaryStore } from '@/stores/diaryStore'
 import { useRouter } from 'vue-router'
 
 // const cardStore = useCardStore()
@@ -19,7 +19,7 @@ const register = ref(false)
 function openRegisterDialog() {
   register.value = true
 }
-const diaryStore = useDraftDiaryStore()
+const diaryStore = useDiaryStore()
 const router = useRouter()
 
 function goRegisterPage() {

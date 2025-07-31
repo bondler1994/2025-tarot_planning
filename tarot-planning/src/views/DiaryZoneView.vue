@@ -2,9 +2,9 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
 import axios from 'axios'
-import { useDraftDiaryStore } from '@/stores/draftDiaryStore'
+import { useDiaryStore } from '@/stores/diaryStore'
 
-const diaryStore = useDraftDiaryStore()
+const diaryStore = useDiaryStore()
 
 // import api from '@/features/tarotDiaryAPI.js'
 
