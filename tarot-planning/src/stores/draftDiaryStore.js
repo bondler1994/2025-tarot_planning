@@ -3,30 +3,41 @@ import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
 import timezone from 'dayjs/plugin/timezone.js'
+import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 
 dayjs.extend(utc) // timezone 依賴 utc，順序不能反
 dayjs.extend(timezone)
 
 export const useDraftDiaryStore = defineStore('diary', () => {
-  const diaryInfo = ref(null)
+  const draftDiary = ref(JSON.parse(localStorage.getItem('diaryInfo') || 'null'))
+  const diaries = ref([])
+  const todayDiary = ref({})
 
   const isDiaryValid = computed(() => {
-    if (!diaryInfo.value.createAt) {
+    if (!draftDiary.value.createAt) {
       return false
     } else {
-      return dayjs(diaryInfo.value.createAt).isSame(dayjs(), 'd')
+      return dayjs(draftDiary.value.createAt).isSame(dayjs(), 'd')
     }
   })
 
   function setDiaryInfo(data) {
-    diaryInfo.value = { ...data }
+    draftDiary.value = { ...data }
     localStorage.setItem('diaryInfo', JSON.stringify(data))
   }
 
   function clearDiary() {
-    diaryInfo.value = null
+    draftDiary.value = null
     localStorage.removeItem('diaryInfo')
   }
 
-  return { diaryInfo, isDiaryValid, setDiaryInfo, clearDiary }
+  async function getDiary() {
+    const data = await tarotDiaryAPI.GET('/api/auth/diaries/1')
+    diaries.value = data.data.month_diaries
+    const todayId = diaries.value.filter(diary => diary.created_at === dayjs().format('YYYY-MM-DD'))[0].id
+    const res =  await tarotDiaryAPI.GET(`/api/auth/diaries/${todayId}`)
+    todayDiary.value = res.data
+  }
+
+  return { diaryInfo: draftDiary, isDiaryValid, setDiaryInfo, clearDiary, getDiary, todayDiary }
 })
