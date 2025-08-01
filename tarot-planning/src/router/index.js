@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import FirstVisit from '@/views/FirstVisit.vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useDiaryStore } from '@/stores/diaryStore'
+import { useCardStore } from '@/stores/cardDataStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -59,12 +61,33 @@ const router = createRouter({
           name: 'today-draw',
           meta: { requiresAuth: true },
           component: () => import('@/views/TodayDrawView.vue'),
+          beforeEnter: () => {
+            const diaryStore = useDiaryStore()
+            const cardStore = useCardStore()
+
+            if (diaryStore.isDiaryValid || cardStore.isCardValid) {
+              console.log('diary-zone')
+              return { name: 'diary-zone' }
+            } else {
+              return true
+            }
+          },
         },
         {
           path: 'diary-zone',
           name: 'diary-zone',
           meta: { requiresAuth: true },
           component: () => import('@/views/DiaryZoneView.vue'),
+          beforeEnter: () => {
+            const diaryStore = useDiaryStore()
+            const cardStore = useCardStore()
+
+            if (diaryStore.isDiaryValid || cardStore.isCardValid) {
+              return true
+            } else {
+              return { name: 'today-draw' }
+            }
+          },
         },
         {
           path: 'diary/statistics',
