@@ -3,8 +3,10 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
 import axios from 'axios'
 import { useDiaryStore } from '@/stores/diaryStore'
+import { useCardStore } from '@/stores/cardDataStore'
 
 const diaryStore = useDiaryStore()
+const cardStore = useCardStore()
 
 // import api from '@/features/tarotDiaryAPI.js'
 
