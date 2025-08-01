@@ -109,8 +109,12 @@ const saveEditing = async () => {
     isEditing.value = false
     //儲存後跳通知
 
+    if (diaryStore.todayDiary) {
+      await diaryStore.updateDiary(interpretation.value)
+    } else {
+      await diaryStore.createDiary(interpretation.value)
+    }
     dialog.value = true
-
     setTimeout(() => {
       dialog.value = false
     }, 2000)
