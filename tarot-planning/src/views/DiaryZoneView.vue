@@ -45,7 +45,26 @@ const fetchInterpretation = async () => {
     //   (entry) => entry.created_at === '2024-03-07',
     // )
     await diaryStore.getDiary()
-    interpretation.value = diaryStore.todayDiary
+    const isCardValid = true
+    if (diaryStore.todayDiary.tarot_card) {
+      interpretation.value = diaryStore.todayDiary
+    } else if (diaryStore.isDiaryValid) {
+      interpretation.value = diaryStore.draftDiary
+    } else if (isCardValid) {
+      const fakeDiary = {
+        user_entry_text: '',
+        tarot_card: {
+          tarot_id: cardStore.cardData.tarot_id,
+          image: cardStore.cardData.image,
+          name: cardStore.cardData.name,
+          is_upright: cardStore.cardData.is_upright,
+          blessing_message: cardStore.cardData.message,
+        },
+      }
+      interpretation.value = fakeDiary
+    } else {
+      throw new Error('日記資料錯誤')
+    }
 
     // interpretations.value = await response.data.entries.filter((entry) => {
     //   console.log('test', todayString.value[0])
