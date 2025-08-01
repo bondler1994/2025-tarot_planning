@@ -66,7 +66,6 @@ const router = createRouter({
             const cardStore = useCardStore()
 
             if (diaryStore.isDiaryValid || cardStore.isCardValid) {
-              console.log('diary-zone')
               return { name: 'diary-zone' }
             } else {
               return true
