@@ -6,6 +6,7 @@ import InputBox from '@/components/InputBox.vue'
 import BtnGoogleLogin from '@/components/BtnGoogleLogin.vue'
 import { useProfileStore } from '../stores/profileStore'
 import { useAuthStore } from '@/stores/authStore'
+import { useDiaryStore } from '@/stores/diaryStore'
 
 const profileStore = useProfileStore()
 const authStore = useAuthStore()
@@ -40,6 +41,7 @@ function emailRule(email) {
   return true
 }
 
+const diaryStore = useDiaryStore()
 async function onSubmit() {
   console.log(loginData.value)
 
@@ -51,7 +53,7 @@ async function onSubmit() {
     const profile = await tarotDiaryAPI.GET('/api/user/me')
     profileStore.updateProfile(profile.data)
 
-    router.push({ name: 'today-draw' })
+    router.push({ name: 'diary-zone' })
   } catch (error) {
     console.log(error)
 
