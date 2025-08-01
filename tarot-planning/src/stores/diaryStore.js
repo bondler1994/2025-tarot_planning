@@ -15,7 +15,7 @@ export const useDiaryStore = defineStore('diary', () => {
 
   const isDiaryValid = computed(() => {
     if (draftDiary.value) {
-      return dayjs(draftDiary.value.create_at).isSame(dayjs(), 'd')
+      return dayjs(draftDiary.value.created_at).isSame(dayjs(), 'd')
     } else {
       return false
     }
