@@ -166,10 +166,8 @@ const captureScreenshot = async () => {
       <!-- body -->
       <div class="diary__body log">
         <div class="log__header card" v-if="interpretation?.tarot_card">
-          <div class="card__header"><img :src="interpretation?.tarot_card.image" alt=""></div>
-          <div
-            class="card__body interpretation"
-          >
+          <div class="card__header"><img :src="interpretation?.tarot_card.image" alt="" /></div>
+          <div class="card__body interpretation">
             <span class="interpretation__title">{{
               `${interpretation?.tarot_card.name} - ${isUpright}`
             }}</span>
@@ -366,7 +364,7 @@ const captureScreenshot = async () => {
     min-width: 64px;
     width: 64px;
 
-    img{
+    img {
       width: 100%;
     }
   }

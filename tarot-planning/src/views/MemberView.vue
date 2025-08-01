@@ -42,7 +42,6 @@ const showingMenu = ref(false)
             <RouterLink :to="{ name: 'today-draw' }" @click="showingMenu = false"
               >塔羅日記</RouterLink
             >
-
           </q-item-section>
         </q-item>
         <q-item clickable>
@@ -60,7 +59,6 @@ const showingMenu = ref(false)
             <RouterLink :to="{ name: 'memberProfile' }" @click="showingMenu = false"
               >會員資料</RouterLink
             >
-
           </q-item-section>
         </q-item>
       </div>
