@@ -90,22 +90,22 @@ const isUpright = computed(() => {
 
 // 編輯日誌專用
 const isEditing = ref(false)
-const tempEdtingLog = ref('')
+const tempEditingLog = ref('')
 
 const startEditing = () => {
   isEditing.value = true
-  return tempEdtingLog.value === interpretation.value.user_entry_text
+  return tempEditingLog.value === interpretation.value.user_entry_text
 }
 
 const cancelEditing = () => {
   isEditing.value = false
-  return tempEdtingLog.value === interpretation.value.user_entry_text
+  return tempEditingLog.value === interpretation.value.user_entry_text
 }
 
 const saveEditing = async () => {
   try {
     // cosnt response = await api.GET('null')
-    interpretation.value.user_entry_text = tempEdtingLog.value
+    interpretation.value.user_entry_text = tempEditingLog.value
     isEditing.value = false
     //儲存後跳通知
 
@@ -205,7 +205,7 @@ const captureScreenshot = async () => {
         <div class="log__body">
           <q-input
             v-if="isEditing"
-            v-model="tempEdtingLog"
+            v-model="tempEditingLog"
             class="textarea"
             input-class="white__text fixed-height"
             type="textarea"
