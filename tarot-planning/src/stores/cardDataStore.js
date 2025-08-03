@@ -12,7 +12,7 @@ export const useCardStore = defineStore('card', () => {
   const cardData = ref(JSON.parse(localStorage.getItem('cardData') || null))
   const isCardValid = computed(() => {
     if (cardData.value) {
-      return dayjs(cardData.value.create_at).isSame(dayjs(), 'd')
+      return dayjs(cardData.value.created_at).isSame(dayjs(), 'd')
     } else {
       return false
     }
@@ -25,7 +25,7 @@ export const useCardStore = defineStore('card', () => {
   async function fetchCardData() {
     const res = await tarotAPI.GET('/api/tarot/draw')
     const now = dayjs().valueOf()
-    setCardData({ ...res.data, create_at: now })
+    setCardData({ ...res.data, created_at: now })
   }
 
   return { cardData, isCardValid, setCardData, fetchCardData }

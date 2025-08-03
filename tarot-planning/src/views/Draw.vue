@@ -145,7 +145,7 @@ const toCreateDiary = () => {
 }
 
 const fetchCardData = async () => {
-  if (!cardData.value || !dayjs(cardData.value.today).isSame(now, 'd')) {
+  if (!cardStore.isCardValid) {
     await cardStore.fetchCardData()
     cardData.value = cardStore.cardData
     localStorage.setItem('cardData', JSON.stringify(cardData.value))
