@@ -65,7 +65,7 @@ const fetchInterpretation = async () => {
     } else {
       throw new Error('日記資料錯誤')
     }
-
+    tempEditingLog.value = interpretation.value.user_entry_text
     // interpretations.value = await response.data.entries.filter((entry) => {
     //   console.log('test', todayString.value[0])
     //   console.log('test2', entry.created_at)
