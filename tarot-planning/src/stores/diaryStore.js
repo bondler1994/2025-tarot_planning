@@ -11,7 +11,7 @@ dayjs.extend(timezone)
 export const useDiaryStore = defineStore('diary', () => {
   const draftDiary = ref(JSON.parse(localStorage.getItem('draftDiary') || 'null'))
   const diaries = ref([])
-  const todayDiary = ref({})
+  const todayDiary = ref(null)
 
   const isDiaryValid = computed(() => {
     if (draftDiary.value) {

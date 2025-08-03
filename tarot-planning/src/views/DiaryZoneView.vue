@@ -46,7 +46,7 @@ const fetchInterpretation = async () => {
     // )
     await diaryStore.getDiary()
     const isCardValid = true
-    if (diaryStore.todayDiary.tarot_card) {
+    if (diaryStore.todayDiary) {
       interpretation.value = diaryStore.todayDiary
     } else if (diaryStore.isDiaryValid) {
       interpretation.value = diaryStore.draftDiary
