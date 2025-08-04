@@ -22,7 +22,7 @@ function openRegisterDialog() {
 const diaryStore = useDiaryStore()
 const router = useRouter()
 
-function goRegisterPage() {
+function handleJoinMemberClick() {
   const payload = {
     tarot_card: {
       tarot_id: cardData.value.tarot_id,
@@ -81,7 +81,7 @@ function goRegisterPage() {
           不想遺漏你的日記嗎？<br />加入會員就可以每天瀏覽過去的日記，更可以跟大家分享你每天的生活喔！
         </p>
         <div class="register__button">
-          <q-btn class="btn" color="blue-5" @click="goRegisterPage"><h4>加入會員</h4></q-btn>
+          <q-btn class="btn" color="blue-5" @click="handleJoinMemberClick"><h4>加入會員</h4></q-btn>
           <q-btn class="btn" color="grey-2" v-close-popup><h4>取消</h4></q-btn>
         </div>
       </div>
