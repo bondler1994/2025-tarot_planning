@@ -18,17 +18,12 @@ export const useAuthStore = defineStore('authStore', () => {
 
   async function refreshIfNeeded() {
     if (!token.value) return
-    const remainingSecond = dayjs(decodeExp(token.value)).diff(dayjs(), 's')
-
-    if (remainingSecond < 60) {
-      try {
-        const newToken = await tarotDiaryAPI.refreshAccess(token.value)
-        setToken(newToken)
-        return
-      } catch (e) {
-        removeToken()
-        return
-      }
+    try {
+      const newToken = await tarotDiaryAPI.refreshAccess(token.value)
+      setToken(newToken)
+    } catch (e) {
+      removeToken()
+      return
     }
   }
 
