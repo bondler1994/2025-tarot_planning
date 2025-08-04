@@ -32,7 +32,7 @@ function goRegisterPage() {
       blessing_message: cardData.value.message,
     },
     user_entry_text: text.value,
-    created_at: cardData.value.create_at,
+    created_at: cardData.value.created_at,
   }
   diaryStore.setDiaryInfo(payload)
   router.push({ name: 'register' })
