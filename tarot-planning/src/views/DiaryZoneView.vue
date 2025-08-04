@@ -3,8 +3,10 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import html2canvas from 'html2canvas'
 import axios from 'axios'
 import { useDiaryStore } from '@/stores/diaryStore'
+import { useCardStore } from '@/stores/cardDataStore'
 
 const diaryStore = useDiaryStore()
+const cardStore = useCardStore()
 
 // import api from '@/features/tarotDiaryAPI.js'
 
@@ -43,8 +45,27 @@ const fetchInterpretation = async () => {
     //   (entry) => entry.created_at === '2024-03-07',
     // )
     await diaryStore.getDiary()
-    interpretation.value = diaryStore.todayDiary
-
+    const isCardValid = true
+    if (diaryStore.todayDiary) {
+      interpretation.value = diaryStore.todayDiary
+    } else if (diaryStore.isDiaryValid) {
+      interpretation.value = diaryStore.draftDiary
+    } else if (isCardValid) {
+      const fakeDiary = {
+        user_entry_text: '',
+        tarot_card: {
+          tarot_id: cardStore.cardData.tarot_id,
+          image: cardStore.cardData.image,
+          name: cardStore.cardData.name,
+          is_upright: cardStore.cardData.is_upright,
+          blessing_message: cardStore.cardData.message,
+        },
+      }
+      interpretation.value = fakeDiary
+    } else {
+      throw new Error('日記資料錯誤')
+    }
+    tempEditingLog.value = interpretation.value.user_entry_text
     // interpretations.value = await response.data.entries.filter((entry) => {
     //   console.log('test', todayString.value[0])
     //   console.log('test2', entry.created_at)
@@ -69,27 +90,31 @@ const isUpright = computed(() => {
 
 // 編輯日誌專用
 const isEditing = ref(false)
-const tempEdtingLog = ref('')
+const tempEditingLog = ref('')
 
 const startEditing = () => {
   isEditing.value = true
-  return tempEdtingLog.value === interpretation.value.user_entry_text
+  return tempEditingLog.value === interpretation.value.user_entry_text
 }
 
 const cancelEditing = () => {
   isEditing.value = false
-  return tempEdtingLog.value === interpretation.value.user_entry_text
+  return tempEditingLog.value === interpretation.value.user_entry_text
 }
 
 const saveEditing = async () => {
   try {
     // cosnt response = await api.GET('null')
-    interpretation.value.user_entry_text = tempEdtingLog.value
+    interpretation.value.user_entry_text = tempEditingLog.value
     isEditing.value = false
     //儲存後跳通知
 
+    if (diaryStore.todayDiary) {
+      await diaryStore.updateDiary(interpretation.value)
+    } else {
+      await diaryStore.createDiary(interpretation.value)
+    }
     dialog.value = true
-
     setTimeout(() => {
       dialog.value = false
     }, 2000)
@@ -180,7 +205,7 @@ const captureScreenshot = async () => {
         <div class="log__body">
           <q-input
             v-if="isEditing"
-            v-model="tempEdtingLog"
+            v-model="tempEditingLog"
             class="textarea"
             input-class="white__text fixed-height"
             type="textarea"
