@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useDiaryStore } from '@/stores/diaryStore'
 import { useCardStore } from '@/stores/cardDataStore'
 import { screenshotAndDownload } from '@/utils/screenshot'
+import dayjs from 'dayjs'
 
 const diaryStore = useDiaryStore()
 const cardStore = useCardStore()
@@ -52,6 +53,7 @@ const fetchInterpretation = async () => {
       interpretation.value = diaryStore.draftDiary
     } else if (isCardValid) {
       const fakeDiary = {
+        created_at: dayjs().format('YYYY-MM-DD'),
         user_entry_text: '',
         tarot_card: {
           tarot_id: cardStore.cardData.tarot_id,
@@ -132,7 +134,7 @@ const captureScreenshot = async () => {
   isCapturing.value = true
 
   try {
-    await screenshotAndDownload('.diary__body', diaryStore.todayDiary.created_at)
+    await screenshotAndDownload('.diary__body', interpretation.value.created_at)
   } catch (e) {
     alert('截圖失敗\n' + e)
   }
