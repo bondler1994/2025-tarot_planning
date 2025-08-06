@@ -8,7 +8,7 @@ const isCapturing = ref(false)
 const captureScreenshot = async () => {
   isCapturing.value = true
 
-  try{
+  try {
     await screenshotAndDownload('.easter-egg', 'egg-share')
   } catch (e) {
     alert('截圖失敗\n' + e)
