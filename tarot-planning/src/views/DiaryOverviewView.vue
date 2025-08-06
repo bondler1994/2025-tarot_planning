@@ -81,7 +81,7 @@ const handleMonthYear = ({ instance, month, year }) => {
     lastMonth.value = '12'
     nextMonth.value = '02'
   } else {
-    lastMonth.value = month.toString().padStart(2, '0') 
+    lastMonth.value = month.toString().padStart(2, '0')
     nextMonth.value = ((month + 2) % 12 || 12).toString().padStart(2, '0')
   }
 }
