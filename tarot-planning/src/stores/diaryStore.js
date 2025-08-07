@@ -32,15 +32,19 @@ export const useDiaryStore = defineStore('diary', () => {
   }
 
   async function getDiary() {
-    const data = await tarotDiaryAPI.GET('/api/auth/diaries/1')
-    diaries.value = data.data.month_diaries
-    const resTodayDiary = diaries.value.filter(
+    const { data } = await tarotDiaryAPI.GET('/api/auth/diaries/1')
+    diaries.value = data.month_diaries
+    //diaries中只有每天日記的摘要，並沒有內容，所以這邊取得今天日記的摘要
+    const todayDiarySummary = diaries.value.find(
       (diary) => diary.created_at === dayjs().format('YYYY-MM-DD'),
-    )[0]
+    )
 
-    if (resTodayDiary) {
-      const res = await tarotDiaryAPI.GET(`/api/auth/diaries/${resTodayDiary.id}`)
-      todayDiary.value = { ...res.data, id: resTodayDiary.id }
+    //如果有找到今天的摘要，就用今天的id去打今天的詳細日記，沒有就維持null
+    if (todayDiarySummary) {
+      const { data } = await tarotDiaryAPI.GET(`/api/auth/diaries/${todayDiarySummary.id}`)
+      todayDiary.value = { ...data, id: todayDiarySummary.id }
+    } else {
+      todayDiary.value = null
     }
   }
 
@@ -58,10 +62,10 @@ export const useDiaryStore = defineStore('diary', () => {
     draftDiary,
     isDiaryValid,
     diaries,
+    todayDiary,
     setDiaryInfo,
     clearDiary,
     getDiary,
-    todayDiary,
     createDiary,
     updateDiary,
   }
