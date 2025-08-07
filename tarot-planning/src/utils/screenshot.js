@@ -7,8 +7,6 @@ export async function screenshotAndDownload(className, fileName) {
       useProxy: 'https://wsrv.nl/?url=',
     })
 
-    const img = await result.toPng()
-    document.body.appendChild(img)
     await result.download({ format: 'jpg', filename: fileName })
   } catch (e) {
     throw new Error(e)
