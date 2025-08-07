@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   requiredRule,
@@ -7,17 +7,18 @@ import {
   passwordConfirmRule,
   emailRule,
 } from '@/features/validateRules.js'
-import { useProfileStore } from '@/stores/profileStore.js'
 import InputBoxRadio from '@/components/InputBoxRadio.vue'
 import InputBox from '@/components/InputBox.vue'
+import { useUserProfile } from '@/composable/useUserProfile'
+
+const { profile, isLoading, error, fetchProfile, updateProfile } = useUserProfile()
 
 const router = useRouter()
-const profileStore = useProfileStore()
 
 const newProfileData = ref({
-  name: profileStore.profile.name,
-  gender: profileStore.profile.gender,
-  birth_date: profileStore.profile.birth_date,
+  name: '',
+  gender: '',
+  birth_date: '',
 })
 
 const passwordConfirm = ref('')
@@ -67,12 +68,10 @@ function openDialog() {
 }
 
 async function onSubmit() {
-  console.log(newProfileData.value)
-
   const payload = newProfileData.value
 
   try {
-    await profileStore.updateProfile(payload)
+    await updateProfile(payload)
 
     newProfileData.value.password = ''
     passwordConfirm.value = ''
@@ -99,10 +98,10 @@ function onHide() {
 
 function onCancel() {
   newProfileData.value = {
-    name: profileStore.profile.name,
+    name: profile.value.name,
     password: '',
-    gender: profileStore.profile.gender,
-    birth_date: profileStore.profile.birth_date,
+    gender: profile.value.gender,
+    birth_date: profile.value.birth_date,
   }
 
   passwordConfirm.value = ''
@@ -115,10 +114,19 @@ function onCancel() {
     birthdate: true,
   }
 }
+
+onMounted(async () => {
+  await fetchProfile()
+  newProfileData.value.name = profile.value.name
+  newProfileData.value.gender = profile.value.gender
+  newProfileData.value.birth_date = profile.value.birth_date
+})
 </script>
 
 <template>
-  <div class="profile column content-center">
+  <div v-if="isLoading">資料獲取中，請稍候...</div>
+  <div v-else-if="error">發生錯誤：{{ error }}</div>
+  <div class="profile column content-center" v-else>
     <div class="profile__title">
       <div class="title">會員資料</div>
     </div>
@@ -127,7 +135,7 @@ function onCancel() {
         <InputBox
           title="帳號"
           :hasSign="false"
-          v-model="profileStore.profile.email"
+          v-model="profile.email"
           :rules="[emailRule]"
           :disable="isDisable.email"
         ></InputBox>
