@@ -8,13 +8,11 @@ import {
   passwordConfirmRule,
   confirmRule,
 } from '@/features/validateRules.js'
-import { useProfileStore } from '@/stores/profileStore.js'
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBox from '@/components/InputBox.vue'
 import InputBoxRadio from '@/components/InputBoxRadio.vue'
 
 const router = useRouter()
-const profileStore = useProfileStore()
 
 const memberData = ref({
   name: '',
@@ -71,8 +69,6 @@ async function onSubmit() {
   try {
     const res = await tarotDiaryAPI.POST('/api/auth/register', payload)
     console.log(res)
-
-    profileStore.updateProfile(payload)
 
     router.push({ name: 'registerConfirmation' })
   } catch (error) {
