@@ -8,7 +8,6 @@ import {
   emailRule,
 } from '@/features/validateRules.js'
 import { useProfileStore } from '@/stores/profileStore.js'
-import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBoxRadio from '@/components/InputBoxRadio.vue'
 import InputBox from '@/components/InputBox.vue'
 
@@ -17,7 +16,6 @@ const profileStore = useProfileStore()
 
 const newProfileData = ref({
   name: profileStore.profile.name,
-  password: profileStore.profile.password,
   gender: profileStore.profile.gender,
   birth_date: profileStore.profile.birth_date,
 })
@@ -74,10 +72,10 @@ async function onSubmit() {
   const payload = newProfileData.value
 
   try {
-    const res = await tarotDiaryAPI.PUT('/api/auth/update', payload)
-    console.log(res)
+    await profileStore.updateProfile(payload)
 
-    profileStore.updateProfile(payload)
+    newProfileData.value.password = ''
+    passwordConfirm.value = ''
 
     isSuccess.value = true
     openDialog()
@@ -102,10 +100,12 @@ function onHide() {
 function onCancel() {
   newProfileData.value = {
     name: profileStore.profile.name,
-    password: profileStore.profile.password,
+    password: '',
     gender: profileStore.profile.gender,
     birth_date: profileStore.profile.birth_date,
   }
+
+  passwordConfirm.value = ''
 
   isDisable.value = {
     email: true,
