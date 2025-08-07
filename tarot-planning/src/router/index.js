@@ -121,24 +121,16 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
-  try {
-    await authStore.refreshIfNeeded()
-  } catch (e) {
-    await authStore.logout()
-  }
-
   if (to.meta.guestOnly && authStore.isAuthenticated) {
-    return next({ name: 'today-draw' })
+    return { name: 'today-draw' }
   }
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    return next({ name: 'login' })
+    return { name: 'login' }
   }
-
-  next()
 })
 
 export default router

@@ -2,13 +2,16 @@ import { defineStore } from 'pinia'
 import dayjs from 'dayjs'
 import { decodeExp } from '@/features/decodeJWT'
 import { ref, computed } from 'vue'
-import tarotDiaryAPI from '@/features/tarotDiaryAPI'
+import { useRouter } from 'vue-router'
+import { apiClient } from '@/lib/http'
 
 export const useAuthStore = defineStore('authStore', () => {
   const token = ref(localStorage.getItem('accessToken') || null)
 
+  const router = useRouter()
+
   const isAuthenticated = computed(() => {
-    return !!token.value && dayjs().isBefore(dayjs(decodeExp(token.value)))
+    return !!token.value
   })
 
   function setToken(newToken) {
@@ -16,26 +19,29 @@ export const useAuthStore = defineStore('authStore', () => {
     localStorage.setItem('accessToken', newToken)
   }
 
-  async function refreshIfNeeded() {
-    if (!token.value) return
-    try {
-      const newToken = await tarotDiaryAPI.refreshAccess(token.value)
-      setToken(newToken)
-    } catch (e) {
-      removeToken()
-      return
-    }
-  }
-
   function removeToken() {
     token.value = null
     localStorage.removeItem('accessToken')
   }
 
-  async function logout() {
-    await tarotDiaryAPI.POST('/api/auth/logout')
-    removeToken()
+  async function logout(force = false) {
+    try {
+      if (!force) {
+        await apiClient.post(
+          '/api/auth/refresh',
+          {},
+          {
+            headers: { Authorization: `Bearer ${token.value}` },
+          },
+        )
+      }
+    } catch (e) {
+      throw new Error(e)
+    } finally {
+      removeToken()
+      router.push({ name: 'login' })
+    }
   }
 
-  return { token, isAuthenticated, setToken, refreshIfNeeded, logout }
+  return { token, isAuthenticated, setToken, removeToken, logout }
 })
