@@ -58,10 +58,10 @@ export const useDiaryStore = defineStore('diary', () => {
     draftDiary,
     isDiaryValid,
     diaries,
+    todayDiary,
     setDiaryInfo,
     clearDiary,
     getDiary,
-    todayDiary,
     createDiary,
     updateDiary,
   }
