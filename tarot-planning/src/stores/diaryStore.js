@@ -32,15 +32,15 @@ export const useDiaryStore = defineStore('diary', () => {
   }
 
   async function getDiary() {
-    const data = await tarotDiaryAPI.GET('/api/auth/diaries/1')
-    diaries.value = data.data.month_diaries
+    const { data } = await tarotDiaryAPI.GET('/api/auth/diaries/1')
+    diaries.value = data.month_diaries
     const resTodayDiary = diaries.value.filter(
       (diary) => diary.created_at === dayjs().format('YYYY-MM-DD'),
     )[0]
 
     if (resTodayDiary) {
-      const res = await tarotDiaryAPI.GET(`/api/auth/diaries/${resTodayDiary.id}`)
-      todayDiary.value = { ...res.data, id: resTodayDiary.id }
+      const { data } = await tarotDiaryAPI.GET(`/api/auth/diaries/${resTodayDiary.id}`)
+      todayDiary.value = { ...data, id: resTodayDiary.id }
     }
   }
 
