@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import tarotDiaryAPI from '@/features/tarotDiaryAPI'
+import dayjs from 'dayjs'
 
 export const useProfileStore = defineStore('profileStore', () => {
   // fake data for testing
@@ -16,7 +17,7 @@ export const useProfileStore = defineStore('profileStore', () => {
       email,
       name,
       gender,
-      birth_date,
+      birth_date: dayjs(birth_date).format('YYYY-MM-DD'),
     }
   }
 
