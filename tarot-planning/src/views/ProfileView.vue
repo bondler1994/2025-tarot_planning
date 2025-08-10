@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   requiredRule,
@@ -8,7 +8,6 @@ import {
   emailRule,
 } from '@/features/validateRules.js'
 import { useProfileStore } from '@/stores/profileStore.js'
-import tarotDiaryAPI from '@/features/tarotDiaryAPI'
 import InputBoxRadio from '@/components/InputBoxRadio.vue'
 import InputBox from '@/components/InputBox.vue'
 
@@ -16,10 +15,11 @@ const router = useRouter()
 const profileStore = useProfileStore()
 
 const newProfileData = ref({
-  name: profileStore.profile.name,
-  password: profileStore.profile.password,
-  gender: profileStore.profile.gender,
-  birth_date: profileStore.profile.birth_date,
+  email: '',
+  name: '',
+  gender: '',
+  birth_date: '',
+  password: '',
 })
 
 const passwordConfirm = ref('')
@@ -49,7 +49,7 @@ const genderOptions = ref([
 
 const birthdate = computed({
   get() {
-    return newProfileData.value.birth_date.split('-').join('/')
+    return newProfileData.value.birth_date?.split('-').join('/')
   },
   set(date) {
     newProfileData.value.birth_date = date.split('/').join('-')
@@ -69,15 +69,14 @@ function openDialog() {
 }
 
 async function onSubmit() {
-  console.log(newProfileData.value)
-
   const payload = newProfileData.value
 
   try {
-    const res = await tarotDiaryAPI.PUT('/api/auth/update', payload)
-    console.log(res)
+    await profileStore.updateProfile(payload)
+    newProfileData.value = profileStore.profile
 
-    profileStore.updateProfile(payload)
+    newProfileData.value.password = ''
+    passwordConfirm.value = ''
 
     isSuccess.value = true
     openDialog()
@@ -101,11 +100,14 @@ function onHide() {
 
 function onCancel() {
   newProfileData.value = {
+    email: profileStore.profile.email,
     name: profileStore.profile.name,
-    password: profileStore.profile.password,
+    password: '',
     gender: profileStore.profile.gender,
     birth_date: profileStore.profile.birth_date,
   }
+
+  passwordConfirm.value = ''
 
   isDisable.value = {
     email: true,
@@ -115,6 +117,16 @@ function onCancel() {
     birthdate: true,
   }
 }
+
+onMounted(async () => {
+  try {
+    await profileStore.getProfile()
+    newProfileData.value = { ...profileStore.profile, password: '' }
+  } catch (e) {
+    alert('資料獲取失敗' + e)
+    router.back()
+  }
+})
 </script>
 
 <template>
@@ -127,7 +139,7 @@ function onCancel() {
         <InputBox
           title="帳號"
           :hasSign="false"
-          v-model="profileStore.profile.email"
+          v-model="newProfileData.email"
           :rules="[emailRule]"
           :disable="isDisable.email"
         ></InputBox>

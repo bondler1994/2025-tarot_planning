@@ -50,8 +50,8 @@ async function onSubmit() {
   try {
     const res = await tarotDiaryAPI.POST('/api/auth/login', payload)
     authStore.setToken(res.token)
-    const profile = await tarotDiaryAPI.GET('/api/user/me')
-    profileStore.updateProfile(profile.data)
+
+    await profileStore.getProfile()
 
     router.push({ name: 'diary-zone' })
   } catch (error) {

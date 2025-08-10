@@ -72,7 +72,7 @@ async function onSubmit() {
     const res = await tarotDiaryAPI.POST('/api/auth/register', payload)
     console.log(res)
 
-    profileStore.updateProfile(payload)
+    profileStore.setProfile(payload)
 
     router.push({ name: 'registerConfirmation' })
   } catch (error) {
