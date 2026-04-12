@@ -21,7 +21,7 @@ const memberData = ref({
   email: '',
   password: '',
   gender: '',
-  birthdate: '',
+  birth_date: '',
 })
 
 const passwordConfirm = ref('')
@@ -44,10 +44,10 @@ const genderOptions = ref([
 
 const birthdate = computed({
   get() {
-    return memberData.value.birthdate.split('-').join('/')
+    return memberData.value.birth_date.split('-').join('/')
   },
   set(date) {
-    memberData.value.birthdate = date.split('/').join('-')
+    memberData.value.birth_date = date.split('/').join('-')
   },
 })
 
@@ -72,7 +72,7 @@ async function onSubmit() {
     const res = await tarotDiaryAPI.POST('/api/auth/register', payload)
     console.log(res)
 
-    profileStore.updateProfile(payload)
+    profileStore.setProfile(payload)
 
     router.push({ name: 'registerConfirmation' })
   } catch (error) {

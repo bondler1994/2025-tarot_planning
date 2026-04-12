@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
-import html2canvas from 'html2canvas'
+import { ref, computed, onMounted } from 'vue'
+import { screenshotAndDownload } from '@/utils/screenshot'
 
 //截圖
 const isCapturing = ref(false)
@@ -8,47 +8,10 @@ const isCapturing = ref(false)
 const captureScreenshot = async () => {
   isCapturing.value = true
 
-  await nextTick()
-
-  // 只選擇 .shareButton 作為截圖範圍
-  const targetElement = document.querySelector('.easter-egg')
-
-  if (targetElement) {
-    const canvas = await html2canvas(targetElement)
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-    const date = new Date()
-    const file = new File(
-      [blob],
-      `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.png`,
-      { type: 'image/png' },
-    )
-
-    const isDesktop = !/Mobi|Android/i.test(navigator.userAgent)
-
-    if (isDesktop) {
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_tarot`
-      link.style.display = 'none'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-    } else {
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: '今日塔羅',
-          text: '來看看我今天抽到了什麼吧！',
-          files: [file],
-        })
-        console.log('分享成功！')
-      } else {
-        console.error('不支援分享此類型的內容')
-      }
-    }
-  } else {
-    console.error('.diary__body 元素未找到')
+  try {
+    await screenshotAndDownload('.easter-egg', 'egg-share')
+  } catch (e) {
+    alert('截圖失敗\n' + e)
   }
 
   isCapturing.value = false

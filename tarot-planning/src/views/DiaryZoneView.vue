@@ -1,7 +1,13 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
-import html2canvas from 'html2canvas'
+import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { useDiaryStore } from '@/stores/diaryStore'
+import { useCardStore } from '@/stores/cardDataStore'
+import { screenshotAndDownload } from '@/utils/screenshot'
+import dayjs from 'dayjs'
+
+const diaryStore = useDiaryStore()
+const cardStore = useCardStore()
 
 // import api from '@/features/tarotDiaryAPI.js'
 
@@ -28,18 +34,40 @@ const todayString = computed(() => {
 })
 
 // 提供給解析用的fn，目前內容為假資料。因為沒有 id，所以用擷取日期得方式偵測最新得卡牌內容
-const interpretations = ref([])
+const interpretation = ref(null)
 
 // 透過此段獲取API內容
 const fetchInterpretation = async () => {
   try {
-    const response = await axios.get(
-      'https://my-json-server.typicode.com/bondler1994/2024-Web-Camp---JStest/db',
-    )
-    interpretations.value = await response.data.entries.filter(
-      (entry) => entry.created_at === '2024-03-07',
-    )
-
+    // const response = await axios.get(
+    //   'https://my-json-server.typicode.com/bondler1994/2024-Web-Camp---JStest/db',
+    // )
+    // interpretations.value = await response.data.entries.filter(
+    //   (entry) => entry.created_at === '2024-03-07',
+    // )
+    await diaryStore.getDiary()
+    const isCardValid = true
+    if (diaryStore.todayDiary) {
+      interpretation.value = diaryStore.todayDiary
+    } else if (diaryStore.isDiaryValid) {
+      interpretation.value = diaryStore.draftDiary
+    } else if (isCardValid) {
+      const fakeDiary = {
+        created_at: dayjs().format('YYYY-MM-DD'),
+        user_entry_text: '',
+        tarot_card: {
+          tarot_id: cardStore.cardData.tarot_id,
+          image: cardStore.cardData.image,
+          name: cardStore.cardData.name,
+          is_upright: cardStore.cardData.is_upright,
+          blessing_message: cardStore.cardData.message,
+        },
+      }
+      interpretation.value = fakeDiary
+    } else {
+      throw new Error('日記資料錯誤')
+    }
+    tempEditingLog.value = interpretation.value.user_entry_text
     // interpretations.value = await response.data.entries.filter((entry) => {
     //   console.log('test', todayString.value[0])
     //   console.log('test2', entry.created_at)
@@ -59,32 +87,36 @@ onMounted(async () => {
 
 //當api來時 判斷api內容之一得isUpright 如果是就正 如果不是就逆
 const isUpright = computed(() => {
-  return interpretations.value[0].tarot_card.is_upright === 'true' ? '正位' : '逆位'
+  return interpretation.value?.tarot_card.is_upright === 1 ? '正位' : '逆位'
 })
 
 // 編輯日誌專用
 const isEditing = ref(false)
-const tempEdtingLog = ref('')
+const tempEditingLog = ref('')
 
 const startEditing = () => {
   isEditing.value = true
-  return tempEdtingLog.value === interpretations.value[0].user_entry_text
+  return tempEditingLog.value === interpretation.value.user_entry_text
 }
 
 const cancelEditing = () => {
   isEditing.value = false
-  return tempEdtingLog.value === interpretations.value[0].user_entry_text
+  return tempEditingLog.value === interpretation.value.user_entry_text
 }
 
 const saveEditing = async () => {
   try {
     // cosnt response = await api.GET('null')
-    interpretations.value[0].user_entry_text = tempEdtingLog.value
+    interpretation.value.user_entry_text = tempEditingLog.value
     isEditing.value = false
     //儲存後跳通知
 
+    if (diaryStore.todayDiary) {
+      await diaryStore.updateDiary(interpretation.value)
+    } else {
+      await diaryStore.createDiary(interpretation.value)
+    }
     dialog.value = true
-
     setTimeout(() => {
       dialog.value = false
     }, 2000)
@@ -101,47 +133,10 @@ const isCapturing = ref(false)
 const captureScreenshot = async () => {
   isCapturing.value = true
 
-  await nextTick()
-
-  // 只選擇 .diary__body 作為截圖範圍
-  const targetElement = document.querySelector('.diary__body')
-
-  if (targetElement) {
-    const canvas = await html2canvas(targetElement)
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-    const date = new Date()
-    const file = new File(
-      [blob],
-      `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.png`,
-      { type: 'image/png' },
-    )
-
-    const isDesktop = !/Mobi|Android/i.test(navigator.userAgent)
-
-    if (isDesktop) {
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_tarot`
-      link.style.display = 'none'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-    } else {
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: '今日塔羅',
-          text: '來看看我今天抽到了什麼吧！',
-          files: [file],
-        })
-        console.log('分享成功！')
-      } else {
-        console.error('不支援分享此類型的內容')
-      }
-    }
-  } else {
-    console.error('.diary__body 元素未找到')
+  try {
+    await screenshotAndDownload('.diary__body', interpretation.value.created_at)
+  } catch (e) {
+    alert('截圖失敗\n' + e)
   }
 
   isCapturing.value = false
@@ -160,18 +155,14 @@ const captureScreenshot = async () => {
     <div class="body diary">
       <!-- body -->
       <div class="diary__body log">
-        <div class="log__header card">
-          <div class="card__header"></div>
-          <div
-            class="card__body interpretation"
-            v-for="(interpretation, index) in interpretations"
-            :key="interpretation.id || index"
-          >
+        <div class="log__header card" v-if="interpretation?.tarot_card">
+          <div class="card__header"><img :src="interpretation?.tarot_card.image" alt="" /></div>
+          <div class="card__body interpretation">
             <span class="interpretation__title">{{
-              `${interpretation.tarot_card.name} - ${isUpright}`
+              `${interpretation?.tarot_card.name} - ${isUpright}`
             }}</span>
             <div class="interpretation__body">
-              {{ interpretation.tarot_card.blessing_message }}
+              {{ interpretation?.tarot_card.blessing_message }}
             </div>
           </div>
         </div>
@@ -179,7 +170,7 @@ const captureScreenshot = async () => {
         <div class="log__body">
           <q-input
             v-if="isEditing"
-            v-model="tempEdtingLog"
+            v-model="tempEditingLog"
             class="textarea"
             input-class="white__text fixed-height"
             type="textarea"
@@ -193,7 +184,7 @@ const captureScreenshot = async () => {
             placeholder="輸入今日心情"
             :dense="true"
           />
-          <p v-else class="log__text">{{ interpretations[0]?.user_entry_text }}</p>
+          <p v-else class="log__text">{{ interpretation?.user_entry_text }}</p>
         </div>
       </div>
       <!-- footer -->
@@ -203,12 +194,17 @@ const captureScreenshot = async () => {
           <img
             v-if="!isEditing"
             @click="captureScreenshot"
-            src="/shareButton.png"
+            src="/2025-tarot_planning/shareButton.png"
             alt="shareButton"
           />
         </div>
         <div class="icon__footer">
-          <img v-if="!isEditing" @click="startEditing" src="/pen.png" alt="pen" />
+          <img
+            v-if="!isEditing"
+            @click="startEditing"
+            src="/2025-tarot_planning/pen.png"
+            alt="pen"
+          />
         </div>
         <div v-if="isEditing" class="edit-actions">
           <q-btn label="取消" unelevated rounded @click="cancelEditing" color="grey" />
@@ -349,14 +345,18 @@ const captureScreenshot = async () => {
   display: flex;
   gap: 24px;
   &__header {
-    background-image: url('/front.png');
-    background-size: 100% 100%; /* 讓圖片填滿 div，可能會裁切 */
-    background-position: center; /* 置中顯示 */
-    background-repeat: no-repeat; /* 不重複 */
-    background-color: white;
+    // background-image: url('/front.png');
+    // background-size: 100% 100%; /* 讓圖片填滿 div，可能會裁切 */
+    // background-position: center; /* 置中顯示 */
+    // background-repeat: no-repeat; /* 不重複 */
+    // background-color: white;
+
     min-width: 64px;
     width: 64px;
-    height: 128px;
+
+    img {
+      width: 100%;
+    }
   }
   &__body {
     height: 128px;

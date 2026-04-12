@@ -1,23 +1,40 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import tarotDiaryAPI from '@/features/tarotDiaryAPI'
+import dayjs from 'dayjs'
 
 export const useProfileStore = defineStore('profileStore', () => {
   // fake data for testing
-  const profile = ref({
-    email: '15t@example.com',
-    name: '邱蓋',
-    password: 'Pass1234',
-    gender: 'other',
-    birthdate: '1990-05-15',
-  })
+  const profile = ref(null)
 
-  function updateProfile(data) {
-    // 之後應該要改成從 API 回來的資料
-    profile.value = { ...profile.value, ...data }
+  async function getProfile() {
+    const { data } = await tarotDiaryAPI.GET('/api/user/me')
+    setProfile(data)
+  }
+
+  function setProfile({ email, name, gender, birth_date }) {
+    profile.value = {
+      email,
+      name,
+      gender,
+      birth_date: dayjs(birth_date).format('YYYY-MM-DD'),
+    }
+  }
+
+  async function updateProfile(payload) {
+    const { data } = await tarotDiaryAPI.PUT('/api/user/update', payload)
+    setProfile(data)
+  }
+
+  function clearProfile() {
+    profile.value = null
   }
 
   return {
     profile,
+    getProfile,
+    setProfile,
     updateProfile,
+    clearProfile,
   }
 })

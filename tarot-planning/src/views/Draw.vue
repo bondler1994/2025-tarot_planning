@@ -1,54 +1,60 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import tarotAPI from '@/features/tarotDiaryAPI'
 import { useCardStore } from '@/stores/cardDataStore'
+import { useAuthStore } from '@/stores/authStore'
 
-const cardData = ref({})
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js'
+import timezone from 'dayjs/plugin/timezone.js'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+
+const now = dayjs().tz('Asia/Taipei')
+
 const cardStore = useCardStore()
 
-const fetchCardData = async () => {
-  cardData.value = await tarotAPI.GET('/api/tarot-draw')
-  cardStore.setCardData(cardData.value.tarot_card)
-}
-
-fetchCardData()
+const cardData = ref(JSON.parse(localStorage.getItem('cardData') || 'null'))
 
 const isUpRight = computed(() => {
-  return cardData.value.tarot_card?.is_upright ? '正位' : '逆位'
+  return cardData.value?.is_upright ? '正位' : '逆位'
 })
 
 const router = useRouter()
 
 const totalCards = 78
-const cards = ref([])
+const cards = ref(
+  Array(totalCards)
+    .fill(null)
+    .map((e, i) => {
+      return { id: i, isFlip: false, isChosen: false }
+    }),
+)
 
 const isDisabled = (isFlip) => {
   return isFlip ? 'none' : ''
 }
 
-let hintShow = ref(false)
+const hintShow = ref(false)
 
+//拖曳時選取卡牌（唯獨行動裝置時觸發，使用touch）
 let isDown = false
 let startX
 let scrollLeft
 let isDragging = false
-
 const handleMouseDown = (e) => {
   isDown = true
   startX = e.pageX - e.currentTarget.offsetLeft
   scrollLeft = e.currentTarget.scrollLeft
 }
-
 const handleMouseUp = () => {
   isDown = false
   setTimeout(() => {
     isDragging = false
   }, 50)
 }
-
 const hoverTarget = ref(null)
-
 const scroll = (e) => {
   if (!isDown) return
   isDragging = true
@@ -63,6 +69,7 @@ const scroll = (e) => {
   }
 }
 
+//控制只能選一張牌
 const isChosen = ref(false)
 const clickCard = async (id) => {
   if (isDragging) return
@@ -74,16 +81,11 @@ const clickCard = async (id) => {
   hoverTarget.value = null
 
   setTimeout(() => {
-      hintShow.value = true
+    hintShow.value = true
   }, 3000)
 }
 
-onMounted(() => {
-  for (let i = 0; i < totalCards; i++) {
-    cards.value.push({ id: i, isFlip: false, isChosen: false })
-  }
-})
-
+//計算每張卡牌旋轉角度
 const getRevolutionRotateDeg = (index) => {
   // const startDeg = 45
   // const endDeg = 135
@@ -104,8 +106,8 @@ const getRevolutionRotateDeg = (index) => {
   }
 }
 
-let isExpanded = ref(0)
-
+//點擊後依序播放動畫
+const isExpanded = ref(0)
 const expandCards = () => {
   isExpanded.value = isExpanded.value + 1
   setTimeout(() => {
@@ -117,6 +119,7 @@ const expandCards = () => {
   }, 2500)
 }
 
+//定義每張牌旋轉的速度不同，製造牌攤開的動畫效果
 const getTransition = (index) => {
   const count = 78
   const time = 1.5
@@ -125,14 +128,34 @@ const getTransition = (index) => {
   }
 }
 
-
+const authStore = useAuthStore()
+//點擊撰寫日記後，元素漸漸淡出
 const opacityTransition = ref(false)
 const toCreateDiary = () => {
   opacityTransition.value = true
   setTimeout(() => {
-    router.push({ name: 'WriteDiary' })
+    if (authStore.token && authStore.isAuthenticated) {
+      router.push({ name: 'diary-zone' })
+    } else if (authStore.token && !authStore.isAuthenticated) {
+      router.push({ name: 'login' })
+    } else {
+      router.push({ name: 'WriteDiary' })
+    }
   }, 2000)
 }
+
+const fetchCardData = async () => {
+  if (!cardStore.isCardValid) {
+    await cardStore.fetchCardData()
+    cardData.value = cardStore.cardData
+    localStorage.setItem('cardData', JSON.stringify(cardData.value))
+  } else {
+    //直接 show 牌面
+    hintShow.value = true
+  }
+}
+
+fetchCardData()
 </script>
 
 <template>
@@ -165,39 +188,51 @@ const toCreateDiary = () => {
             show: card.isFlip,
           }"
           :style="{
-            pointerEvents: isDisabled(isChosen),
+            pointerEvents: isDisabled(cards.some((card) => card.isChosen)),
             transform: isExpanded >= 2 && !card.isFlip ? getRevolutionRotateDeg(index) : '',
             transition: card.isFlip ? '' : getTransition(index),
           }"
           @click="clickCard(card.id)"
         >
           <div class="card" :class="{ 'hover-effect': hoverTarget === index, flip: card.isFlip }">
-            <div class="front" :class="{ reversed: !cardData.tarot_card?.is_upright }"></div>
-            <div class="back"></div>
+            <div class="front" :class="{ reversed: !cardData?.is_upright }">
+              <img :src="cardData?.image" alt="" />
+            </div>
+            <div class="back">
+              <img src="/2025-tarot_planning/back.png" alt="" />
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <h3 class="draw-hint" :class="{ 'card-hide': hintShow }">
+    <h3 class="draw-hint" :class="{ 'draw-hint-hide': hintShow }">
       請<br />點<br />擊<br />抽<br />牌<br />！
     </h3>
     <div
       class="tarot-hint"
-      :style="{ zIndex: hintShow ? '1' : '-1', opacity: hintShow && !opacityTransition ? '1' : '0', transition: opacityTransition ? 'opacity 1s ease' : '' }"
+      :style="{
+        zIndex: hintShow ? '1' : '-1',
+        opacity: hintShow && !opacityTransition ? '1' : '0',
+        transition: opacityTransition ? 'opacity 1s ease' : '',
+      }"
     >
-      <h4>{{ cardData.tarot_card?.name }} - {{ isUpRight }}</h4>
-      <div class="hint-card"></div>
-      <p>{{ cardData.tarot_card?.blessing_message }}</p>
+      <h4>{{ cardData?.name }} - {{ isUpRight }}</h4>
+      <div class="hint-card" :class="{ reversed: !cardData?.is_upright }">
+        <img :src="cardData?.image" alt="" />
+      </div>
+      <p>{{ cardData?.message }}</p>
       <q-btn @click="toCreateDiary" class="write-diary-btn">撰寫日記</q-btn>
     </div>
   </main>
-  <!-- <pre>{{ cardData }}</pre> -->
 </template>
 
 <style scoped lang="scss">
 @use '@/assets/sass/font.scss' as *;
 @use '@/assets/sass/button.scss' as *;
 
+main {
+  background-color: $blue-2;
+}
 .screen {
   width: 100%;
   height: 100%;
@@ -248,19 +283,17 @@ const toCreateDiary = () => {
   background-repeat: no-repeat;
   position: absolute;
   backface-visibility: hidden;
+
+  img {
+    width: 100%;
+  }
 }
 .front {
-  background-image: url(/front.png); //todo: 到時候換成API圖片網址
   transform: rotateY(180deg);
 }
 
-.front.reversed {
-  background-image: url(/front.png); //todo: 到時候換成API圖片網址
+.reversed {
   transform: rotateY(180deg) rotateZ(180deg);
-}
-
-.back {
-  background-image: url(/back.png); //todo: 到時候換成API圖片網址
 }
 
 .card-container:hover .card:not(.flip) {
@@ -292,7 +325,6 @@ const toCreateDiary = () => {
   bottom: 0;
   right: 57px;
   margin: auto;
-  z-index: -1;
 }
 
 //step1 為停留在畫面中間
@@ -324,14 +356,20 @@ const toCreateDiary = () => {
   transform: rotate(0deg) translate(-50%, -50%) scale(2.5);
   z-index: 1;
 
-  transition: translate 1s, transform 1s 0.5s;
+  transition:
+    translate 1s,
+    transform 1s 0.5s;
 }
 
 .hint-card {
   width: 64px;
-  height: 128px;
-  background-image: url(/front.png);
+  // height: 128px;
+  // background-image: url(/front.png);
   background-size: cover;
+
+  img {
+    width: 100%;
+  }
 }
 
 .tarot-hint {
@@ -379,5 +417,10 @@ const toCreateDiary = () => {
 .card-hide {
   opacity: 0;
   transition: opacity 1s 0.5s ease;
+}
+
+.draw-hint-hide {
+  opacity: 0;
+  transition: opacity 0.5s ease;
 }
 </style>

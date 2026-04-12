@@ -1,14 +1,4 @@
-import axios from 'axios'
-
-const API_URL = 'https://virtserver.swaggerhub.com/fufu/PublicTarotDiaryAPI/1.0.0'
-
-const apiClient = axios.create({
-  baseURL: `${API_URL}`,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-})
+import { apiClient } from '@/lib/http'
 
 export default {
   async GET(url) {

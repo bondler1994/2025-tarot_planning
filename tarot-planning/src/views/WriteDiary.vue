@@ -1,68 +1,41 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { useCardStore } from '@/stores/cardDataStore'
-// import html2canvas from 'html2canvas'
-// import { nextTick } from 'vue'
+// import { useCardStore } from '@/stores/cardDataStore'
+import { useDiaryStore } from '@/stores/diaryStore'
+import { useRouter } from 'vue-router'
 
-const cardStore = useCardStore()
+// const cardStore = useCardStore()
+const cardData = ref({})
+cardData.value = JSON.parse(localStorage.getItem('cardData'))
 
 const isUpRight = computed(() => {
-  return cardStore.cardData.is_upright ? '正位' : '逆位'
+  return cardData.value.is_upright ? '正位' : '逆位'
 })
 
 const text = ref('')
 
-const isCapturing = ref(false)
-
 const register = ref(false)
 
-const captureScreenshot = async () => {
-  // isCapturing.value = true
-
-  // await nextTick()
-
-  // const canvas = await html2canvas(document.querySelector('.diary-block'))
-  // const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
-  // const date = new Date()
-  // const file = new File(
-  //   [blob],
-  //   `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.png`,
-  //   { type: 'image/png' },
-  // )
-
-  // const isDesktop = !/Mobi|Android/i.test(navigator.userAgent)
-
-  // try {
-  //   if (isDesktop) {
-  //     const url = URL.createObjectURL(blob)
-  //     const link = document.createElement('a')
-  //     link.href = url
-  //     link.download = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_tarot`
-  //     link.style.display = 'none'
-  //     document.body.appendChild(link)
-  //     link.click()
-  //     document.body.removeChild(link)
-  //     URL.revokeObjectURL(url)
-  //   } else {
-  //     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-  //       await navigator.share({
-  //         title: '今日塔羅',
-  //         text: '來看看我今天抽到了什麼吧！',
-  //         files: [file],
-  //       })
-  //       console.log('分享成功！')
-  //     } else {
-  //       console.error('不支援分享此類型的內容')
-  //     }
-  //   }
-  // } catch(error) {
-  //   console.log(error)
-  // }
-
-  // isCapturing.value = false
-  //todo: 流程預設是不給分享，直接跳出註冊會員
-
+function openRegisterDialog() {
   register.value = true
+}
+const diaryStore = useDiaryStore()
+const router = useRouter()
+
+function handleJoinMemberClick() {
+  const payload = {
+    tarot_card: {
+      tarot_id: cardData.value.tarot_id,
+      image: cardData.value.image,
+      name: cardData.value.name,
+      is_upright: cardData.value.is_upright,
+      blessing_message: cardData.value.message,
+    },
+    user_entry_text: text.value,
+    created_at: cardData.value.created_at,
+  }
+  diaryStore.setDiaryInfo(payload)
+  router.push({ name: 'register' })
 }
 </script>
 
@@ -71,20 +44,17 @@ const captureScreenshot = async () => {
     <main>
       <div class="diary-block">
         <div class="card">
-          <div class="card__img" :class="cardStore.cardData.is_upright ? '' : 'reversed'">
-            <img src="/front.png" alt="" />
-            <!-- todo: 到時候換成API圖片網址 -->
+          <div class="card__img" :class="cardData.is_upright ? '' : 'reversed'">
+            <img :src="cardData.image" alt="" />
           </div>
           <div class="card__info info">
-            <h4 class="info__title">{{ cardStore.cardData.name }} - {{ isUpRight }}</h4>
-            <p class="info__content">{{ cardStore.cardData.blessing_message }}</p>
+            <h4 class="info__title">{{ cardData.name }} - {{ isUpRight }}</h4>
+            <p class="info__content">{{ cardData.message }}</p>
           </div>
         </div>
         <div class="diary">
           <div class="q-pa-md">
-            <p v-if="isCapturing" class="fake-content">{{ text ? text : '以下空白' }}</p>
             <q-input
-              v-else
               class="textarea"
               type="textarea"
               input-class="my-textarea"
@@ -100,7 +70,7 @@ const captureScreenshot = async () => {
         </div>
       </div>
       <div class="">
-        <q-btn @click="captureScreenshot" class="save-btn" color="blue-5"
+        <q-btn @click="openRegisterDialog" class="save-btn" color="blue-5"
           ><h4>儲存並分享 ></h4></q-btn
         >
       </div>
@@ -111,9 +81,7 @@ const captureScreenshot = async () => {
           不想遺漏你的日記嗎？<br />加入會員就可以每天瀏覽過去的日記，更可以跟大家分享你每天的生活喔！
         </p>
         <div class="register__button">
-          <q-btn class="btn" color="blue-5" @click="$router.push({ name: 'register' })"
-            ><h4>加入會員</h4></q-btn
-          >
+          <q-btn class="btn" color="blue-5" @click="handleJoinMemberClick"><h4>加入會員</h4></q-btn>
           <q-btn class="btn" color="grey-2" v-close-popup><h4>取消</h4></q-btn>
         </div>
       </div>
@@ -160,6 +128,7 @@ main {
 
   &__img {
     flex: 0 1 64px;
+    margin: auto;
 
     &.reversed {
       transform: rotate(180deg);

@@ -26,7 +26,7 @@ const getWeekday = computed(() => {
       <div class="date__footer">{{ `(${getWeekday})` }}</div>
     </div>
     <div class="body draw">
-      <router-link to="/member/diary-zone" class="draw__header button">
+      <router-link :to="{ name: 'Draw' }" class="draw__header button">
         <q-btn class="button__header" unelevated rounded color="primary" label="本日抽牌" />
       </router-link>
       <div class="draw__body"></div>
